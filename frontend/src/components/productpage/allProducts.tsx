@@ -11,7 +11,7 @@ function allProducts() {
   const route = useRouter();
   return (
     <main className='w-[75%] min-h-screen bg-white m-4 mr-16 items-center'>
-      <div className='text-gray-400 font-semibold mx-24 mt-24 mb-6'><Link href={"/"}>Home</Link>/Store</div>
+      <div className='text-gray-400 font-semibold mx-24 mt-24 mb-6 text-xl'><Link href={"/"}>Home</Link>/Store</div>
       <div className="grid grid-cols-3 w-[90%]  py-16 mx-20 my-12 gap-6 ">
         {
           products.map((product: any) => {

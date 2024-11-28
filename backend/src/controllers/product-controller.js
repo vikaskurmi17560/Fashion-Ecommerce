@@ -71,7 +71,7 @@ catch(Error){
 //--------------------------------------------->get only one item---------------------------------------------------------------------------
 exports.get_product= async (req,res)=>{
   try{
-    const {product_id}=req.params
+    const {product_id}=req.query
   const product=await Products.findById(product_id)
   return res.status(200).json({
     success:true,

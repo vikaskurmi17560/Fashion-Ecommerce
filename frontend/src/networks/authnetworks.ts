@@ -65,6 +65,7 @@ export async function GetProduct(id:any){
          const res= await axios.get(
           `${ProductUrl}?product_id=${id}`
          );
+         console.log("kya yar",res);
          return res.data
   }
   catch(error){

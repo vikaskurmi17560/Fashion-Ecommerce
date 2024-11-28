@@ -141,15 +141,10 @@ function Navbar() {
                 </div>
                 <div className="w-[90%] flex flex-col gap-5 py-5 my-2">
                   <button
-                    className="w-full text-xl text-white font-bold bg-blue-500 px-5 py-3 hover:bg-black focus:bg-blue-300 transition-all duration-300"
+                    className="w-full h-auto text-xl text-white font-bold bg-blue-500 px-5 py-3 hover:bg-black focus:bg-blue-300 transition-all duration-300"
                     onClick={() => router.push("/cart")}
                   >
                     VIEW CART
-                  </button>
-                  <button
-                    className="w-full text-xl text-white font-bold bg-blue-500 px-5 py-3 hover:bg-black focus:bg-blue-300 transition-all duration-300"
-                  >
-                    CHECKOUT
                   </button>
                 </div>
                 </div>
