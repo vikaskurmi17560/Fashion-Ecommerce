@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap'); /* Optimized import */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Define background and foreground colors using CSS variables */
+:root {
+  --background-light: #ffffff;
+  --foreground-light: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-light: #0a0a0a;
+    --foreground-light: #ededed;
+  }
+}
+
+/* Use the Tailwind dark mode feature */
+body {
+  color: var(--foreground-light);
+  background: var(--background-light);
+  font-family: 'Poppins', Arial, Helvetica, sans-serif; /* Use Poppins font */
+}
+
+/* Tailwind's typography */
+h1, h2, h3, h4, h5, h6 {
+  color: inherit; /* Let Tailwind handle color */
+}
+
+
+/* Optional: add custom dark mode handling if not using Tailwind's dark classes */
+.dark body {
+  background: var(--background-light);
+  color: var(--foreground-light);
+}
