@@ -13,6 +13,7 @@ function Navbar() {
   const [name, setName] = useState<string | null>(null);
   const [seebucket, setSeeBucket] = useState<boolean>(false);
   const { carts, deleteCart, getCarts } = useCart();
+  const [bucket,setBucket]=useState<boolean>(true);
   
   useEffect(() => {
     const user_name = localStorage.getItem("user_name");
@@ -42,7 +43,9 @@ function Navbar() {
             <Link href="#" className='text-white hover:text-blue-200 '>WOMEN</Link>
             <Link href="#" className='text-white hover:text-blue-200 '>MEN</Link>
             <Link href="#" className='text-white hover:text-blue-200 '>ACCESSORIES</Link>
-            <Link href="/product" className='text-white'>try</Link>
+            <Link href="/success" className='text-white'>try</Link>
+            <Link href="/checkout" className='text-white'>try02</Link>
+
 
           </div>
         </div>
@@ -50,12 +53,16 @@ function Navbar() {
         <div className="hidden md:flex items-center justify-between h-20 px-6 gap-8 text-xl">
           <Link href="/about" className='text-white hover:text-blue-200 '>ABOUT</Link>
           <Link href="/contact" className='text-white hover:text-blue-200 '>CONTACT US</Link>
-          <Link href="#" className='text-white hover:text-blue-200  ' onClick={() => {
-            setSeeBucket(!seebucket)
-            getCarts();
-          }}>
-            <ShoppingCartIcon />
-          </Link>
+          {
+            bucket && (
+              <Link href="#" className='text-white hover:text-blue-200  ' onClick={() => {
+                getCarts();
+                setSeeBucket(!seebucket)
+              }}>
+                <ShoppingCartIcon />
+              </Link>
+            )
+          }
 
           {
             (name || profileimg) ? <div className="">
@@ -77,8 +84,7 @@ function Navbar() {
               <h1 className='text-xl font-semibold w-auto text-center'>Shopping Cart</h1>
               <div className="p-1 w-auto ">
                 <p className=' p-1 w-auto cursor-pointer' onClick={() => {
-                  setSeeBucket(false)
-                  
+                  setSeeBucket(false) 
                 }}>
                   <CancelIcon />
                 </p>
@@ -142,9 +148,20 @@ function Navbar() {
                 <div className="w-[90%] flex flex-col gap-5 py-5 my-2">
                   <button
                     className="w-full h-auto text-xl text-white font-bold bg-blue-500 px-5 py-3 hover:bg-black focus:bg-blue-300 transition-all duration-300"
-                    onClick={() => router.push("/cart")}
+                    onClick={() => {
+                      setBucket(!bucket);
+                      router.push("/cart")
+                    }}
                   >
                     VIEW CART
+                  </button>
+                  <button
+                    className="w-full text-xl text-white font-bold bg-blue-500 px-5 py-3 hover:bg-black focus:bg-blue-300 transition-all duration-300"
+                    onClick={() => {
+                      setSeeBucket(!seebucket);
+                    }}
+                  >
+                    Shopping Continue
                   </button>
                 </div>
                 </div>
@@ -152,7 +169,9 @@ function Navbar() {
                 <div className="w-[90%] mt-24">
                   <button
                     className="w-full text-xl text-white font-bold bg-blue-500 px-5 py-3 hover:bg-black focus:bg-blue-300 transition-all duration-300"
-                    onClick={() => router.push("/products")}
+                    onClick={() => {
+                      setSeeBucket(!seebucket);
+                    }}
                   >
                     SHOP NOW
                   </button>

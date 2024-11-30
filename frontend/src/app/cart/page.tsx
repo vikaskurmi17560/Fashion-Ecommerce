@@ -5,14 +5,17 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import useCart from '@/hook/useCart'
 import axios from 'axios';
 import { useEffect } from 'react';
-
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 
 
 function page() {
     const { carts, deleteCart } = useCart();
-
+    const Router=useRouter();
     async function handleCheckout(amount: number) {
+
+        const customer=localStorage.getItem("user_id");
         const body = {
             amount: amount
         }
@@ -26,7 +29,7 @@ function page() {
                 "description": "Test Transaction",
                 "image": "https://example.com/your_logo",
                 "order_id": response.data.data.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-                "callback_url": "https://eneqd3r9zrjok.x.pipedream.net/",
+        
                 "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
                     "name": "Gaurav Kumar", //your customer's name
                     "email": "gaurav.kumar@example.com",
@@ -37,12 +40,20 @@ function page() {
                 },
                 "theme": {
                     "color": "#3389cc"
+                },
+                handler:async function(response:any){
+                    response.customer=customer 
+                    const res=await axios.post(`http://localhost:6969/api/v1/payment/verify-payment`,response);
+                    if(res.data.success){
+                        toast.success("payment successful")
+                        Router.replace(`/success?razorpay_payment_id=${res.data.data}`);
+                    }
                 }
             };
-            
-                const rzpay = new (window as any).Razorpay(options);
-                rzpay.open()
-            
+
+            const rzpay = new (window as any).Razorpay(options);
+            rzpay.open()
+
 
         }
     }
@@ -113,7 +124,7 @@ function page() {
                         <div className=" text-xl text-slate-500 p-4 border-2 border-slate-300">$ 150</div>
                     </div>
 
-                    <button onClick={()=>handleCheckout(1500)} className='text-white bg-blue-500 hover:bg-black hover:text-white w-full h-auto py-3 text-center text-2xl font-bold ' >
+                    <button onClick={() => handleCheckout(1500)} className='text-white bg-blue-500 hover:bg-black hover:text-white w-full h-auto py-3 text-center text-2xl font-bold ' >
                         Checkout
                     </button>
 
