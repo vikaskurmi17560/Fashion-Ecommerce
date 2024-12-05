@@ -1,6 +1,6 @@
 'use client'
 import Navbar from '@/components/UI/Navbar';
-import { Forgot } from '@/networks/authnetworks';
+import { Forgot } from '@/networks/customernetworks';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';

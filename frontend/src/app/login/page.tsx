@@ -1,6 +1,6 @@
 'use client'
 import Navbar from '@/components/UI/Navbar';
-import { LogIn } from '@/networks/authnetworks';
+import { LogIn } from '@/networks/customernetworks';
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'

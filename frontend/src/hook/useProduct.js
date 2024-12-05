@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { AddToCart, GetProducts } from '@/networks/authnetworks';
+import { GetProducts } from '@/networks/authnetworks';
+import { AddToCart} from'@/networks/cartnetworks'
 import toast from 'react-hot-toast';
 
 function useProduct() {

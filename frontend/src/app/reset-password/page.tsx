@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import Navbar from '@/components/UI/Navbar';
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast';
-import {  Reset } from '@/networks/authnetworks';
+import {  Reset } from '@/networks/customernetworks';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/router';
 

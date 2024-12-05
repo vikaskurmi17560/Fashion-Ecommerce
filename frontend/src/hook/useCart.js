@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CartDelete, GetCart } from '../networks/authnetworks';
+import { CartDelete, GetCart } from '../networks/cartnetworks'
 import toast from 'react-hot-toast';
 
  function useCartInfo() {

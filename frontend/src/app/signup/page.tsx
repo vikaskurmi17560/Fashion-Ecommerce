@@ -1,6 +1,6 @@
 'use client'
 import Navbar from '@/components/UI/Navbar';
-import { SignUp } from '@/networks/authnetworks';
+import { SignUp } from '@/networks/customernetworks';
 import Link from 'next/link';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'

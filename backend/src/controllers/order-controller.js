@@ -29,3 +29,56 @@ exports.createOrder = async (req,res)=>{
    }
 
 }
+exports.getOrder = async (req,res)=>{
+
+   const{order_id}=req.body
+   try{
+      const order= await Orders.find({order_id});
+      
+      return res.status(200).json({
+        success:true,
+        message:"Order fetch successfully",
+        data:order,
+      })
+   }
+   catch(error){
+      return res.status(500).json({
+        success:false,
+        message:error.message,
+      })
+
+   }
+}
+
+exports.getOrder = async (req, res) => {
+   const { order_id } = req.params; // Use route parameter
+ 
+   try {
+     // Fetch the order by its ID
+     const order = await Orders.findById(order_id);
+ 
+     if (!order) {
+       return res.status(404).json({
+         success: false,
+         message: "Order not found",
+       });
+     }
+ 
+     // Fetch related order items
+     const orderItems = await OrderItems.find({ order_id: order._id });
+ 
+     return res.status(200).json({
+       success: true,
+       message: "Order fetched successfully",
+       data: {
+         order,
+         orderItems,
+       },
+     });
+   } catch (error) {
+     return res.status(500).json({
+       success: false,
+       message: error.message,
+     });
+   }
+ };

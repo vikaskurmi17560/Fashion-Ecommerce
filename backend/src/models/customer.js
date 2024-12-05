@@ -15,7 +15,13 @@ const customerSchema = new mongoose.Schema({
     phone_no: {
         type: String,
         required: true,
-    },
+        validate: {
+          validator: function (v) {
+            return /^\d{10,15}$/.test(v); 
+          },
+          message: (props) => `${props.value} is not a valid phone number!`,
+        },
+      },
     role: {
         type: String,
         enum: ['admin', 'customer'],

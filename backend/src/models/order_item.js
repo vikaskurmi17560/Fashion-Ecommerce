@@ -18,6 +18,6 @@ const OrderItemSchema = new mongoose.Schema({
     },
 }, { timestamps: true })
 //create model
-const OrderItem = mongoose.Model("OrderItem", OrderItemSchema);
+const OrderItem = mongoose.model("OrderItem", OrderItemSchema);
 //export model
 module.exports = OrderItem;
