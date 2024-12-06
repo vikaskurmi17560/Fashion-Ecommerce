@@ -7,6 +7,14 @@ const addressSchema = new mongoose.Schema(
       ref: "Customer",
       required: true,
     },
+    firstname:{
+      type: String,
+      required: true,
+    },
+    lastname:{
+      type: String,
+      required: true,
+    },
     country: {
       type: String,
       required: true,
@@ -35,6 +43,10 @@ const addressSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
+);
+addressSchema.index(
+  {street: 1, city: 1, state: 1, pincode: 1 },
+  { unique: true }
 );
 
 const Address = mongoose.model("Address", addressSchema);

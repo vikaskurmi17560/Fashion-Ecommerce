@@ -1,10 +1,10 @@
 const Address=require("../models/address");
 
 exports.createAddress= async(req,res)=>{
-    const{customer_id,country,city ,street,pincode,state}=req.body;
+    const{customer_id,country,city ,street,pincode,state,firstname,lastname}=req.body;
 
     try{
-        const Response = await Address.create({customer_id,country,city ,street,pincode,state})
+        const Response = await Address.create({customer_id,country,city ,street,pincode,state,firstname,lastname})
         return res.status(200).json({
             success:true,
             message:"Address Add Successfully",
@@ -12,6 +12,7 @@ exports.createAddress= async(req,res)=>{
         })
     }
     catch(error){
+        
         return res.status(500).json({
             success:false,
             message:"address not Created"

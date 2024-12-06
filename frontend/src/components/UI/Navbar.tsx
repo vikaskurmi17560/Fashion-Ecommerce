@@ -55,13 +55,13 @@ function Navbar() {
             <Link href="/products" className="hover:text-blue-200">
               EVERYTHING
             </Link>
-            <Link href="#" className="hover:text-blue-200">
+            <Link href="/womensection" className="hover:text-blue-200">
               WOMEN
             </Link>
-            <Link href="#" className="hover:text-blue-200">
+            <Link href="/mensection" className="hover:text-blue-200">
               MEN
             </Link>
-            <Link href="#" className="hover:text-blue-200">
+            <Link href="/accessories" className="hover:text-blue-200">
               ACCESSORIES
             </Link>
           </div>

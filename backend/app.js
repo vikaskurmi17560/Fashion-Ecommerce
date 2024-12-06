@@ -17,5 +17,5 @@ app.use('/api/v1/product',product_route);
 app.use('/api/v1/cart',cart_route);
 app.use('/api/v1/payment',payment_route)
 app.use('/api/v1/address',address_route)
-app.use(`/api/v1/order`,order_route)
-module.exports={app};
+app.use('/api/v1/order',order_route)
+module.exports=app;

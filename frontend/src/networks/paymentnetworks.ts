@@ -1,4 +1,4 @@
-import { CreatePaymentUrl } from '@/constants';
+import { CreatePaymentUrl, verifyPaymentUrl } from '@/constants';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -35,7 +35,7 @@ export async function handleCheckout(amount: number) {
             },
             handler:async function(response:any){
                 response.customer=customer 
-                const res=await axios.post(`http://localhost:6969/api/v1/payment/verify-payment`,response);
+                const res=await axios.post(`${verifyPaymentUrl}`,response);
                 if(res.data.success){
                     toast.success("payment successful")
                     //address-order create hoga

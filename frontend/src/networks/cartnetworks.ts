@@ -18,7 +18,8 @@ export async function AddToCart(body: any) {
   
   export async function GetCart(Params:any){
     try{
-      const response= await axios .get(`${CartGetUrl}?customer_id=6740a7f94e07c8eb0e197b6b`);
+      const id= localStorage.getItem("user_id");
+      const response= await axios .get(`${CartGetUrl}?customer_id=${id}`);
       return response.data;
     }catch(error){
       console.error(error);

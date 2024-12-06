@@ -5,7 +5,7 @@ import Footer from '@/components/UI/Footer'
 import StarIcon from '@mui/icons-material/Star';
 import useProduct from '@/hook/useProduct';
 import { useSearchParams } from 'next/navigation';
-import { GetProduct } from '@/networks/authnetworks';
+import { GetProduct } from '@/networks/productnetworks';
 import Link from 'next/link';
 function page() {
     const {  AddCart } = useProduct();

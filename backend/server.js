@@ -1,4 +1,4 @@
-const {app} = require("./app");
+const app = require("./app");
 const env = require('dotenv');//import .env file
 const Mongoose = require("mongoose");//import mongoose
 env.config();

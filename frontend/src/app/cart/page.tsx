@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 function page() {
     const { carts, deleteCart } = useCart();
     const Router=useRouter();
+
    
     return (
         <main className='flex flex-col justify-center items-center bg-slate-100'>
@@ -32,7 +33,7 @@ function page() {
                         <div className="font-extrabold text-center lg:p-4 md:p-2 p-1">Sub Total</div>
                     </div>
 
-
+                     
                     {carts &&
                         carts.map((cart: any) => {
                             return (
@@ -92,5 +93,3 @@ function page() {
 }
 
 export default page
-
-// onClick={() => handleCheckout(1500)}
