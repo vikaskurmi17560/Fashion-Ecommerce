@@ -4,6 +4,6 @@ const {signup,login, forgetPassword,resetPassword} = require("../controllers/cus
 const router=express.Router();
 router.post("/signup",upload.single("profile"),signup);
 router.post("/login",login);
-router.post("/forget",forgetPassword);
+router.post("/forgot",forgetPassword);
 router.post("/reset-password",resetPassword);
 module.exports=router;

@@ -4,6 +4,7 @@ import HeroSection from '@/components/homepage/heroSection'
 import FeatureSection from '@/components/homepage/featureSection'
 import Footer from '@/components/UI/Footer'
 function page() {
+  
   return (
     <div>
       <Home />
@@ -14,4 +15,4 @@ function page() {
   )
 }
 
-export default page
+export default page;

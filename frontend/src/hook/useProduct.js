@@ -43,11 +43,14 @@ function useProduct() {
           quantity: 1,
           size: data.sizes[0].size,
           color: data.colors[0],
-          total_price: 500,
+          total_price: data.sale_price,
         }
         const res = await AddToCart(body);
         if(res.success){
           toast.success("Add To Cart")
+        }
+        if(res.message === "cart is already here!"){
+          toast.error("item is already into the  Cart")
         }
         
       }

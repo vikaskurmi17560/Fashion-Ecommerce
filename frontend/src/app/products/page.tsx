@@ -7,7 +7,7 @@ function page() {
   return (
     <main className=''>
         <Navbar />
-        <div className="py-16 bg-slate-100 w-full flex flex-row ">
+        <div className="py-16 bg-slate-100 w-full flex lg:flex-row flex-col ">
             <Filters />
             <AllProducts />
         </div>

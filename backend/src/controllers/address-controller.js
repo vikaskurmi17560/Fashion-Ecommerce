@@ -24,10 +24,10 @@ exports.createAddress= async(req,res)=>{
 exports.getAddress= async(req,res)=>{
     const {customer_id}=req.query
     try{
-        const Response = await Address.find({customer_id:customer_id})
+        const Response = await Address.findOne({customer_id})
         return res.status(200).json({
             success:true,
-            message:"Address Add Successfully",
+            message:"Address Fetch Successfully",
             data:Response
         })
     }

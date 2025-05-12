@@ -2,12 +2,12 @@ const express=require("express");
 const dotenv=require("dotenv");
 const cors=require("cors")
 const app=express();
-const customer_route=require("./src/routes/customer.route")
-const product_route=require("./src/routes/product.route")
-const cart_route=require("./src/routes/cart.route")
-const payment_route=require("./src/routes/payment.route")
-const address_route=require("./src/routes/address.route")
-const order_route=require("./src/routes/order-route")
+const customer_route=require("./src/routes/customer_route")
+const product_route=require("./src/routes/product_route")
+const cart_route=require("./src/routes/cart_route")
+const payment_route=require("./src/routes/payment_route")
+const address_route=require("./src/routes/address_route")
+const order_route=require("./src/routes/order_route")
 app.use(cors());
 
 app.use(express.json());

@@ -8,8 +8,8 @@ exports.cartCreate = async (req, res) => {
 
         const cartExists = await Carts.findOne({ product_id, customer_id });
         if (cartExists) {
-            return res.status(400).json({
-                success: true,
+            return res.status(201).json({
+                success: false,
                 message: "cart is already here!"
             });
         }
