@@ -6,7 +6,7 @@ import StarHalfIcon from '@mui/icons-material/StarHalf';
 import useProduct from '@/hook/useProduct';
 import { useRouter } from 'next/navigation';
 import Filter from '@/components/productpage/filters';
-import Navbar from '@/components/UI/Navbar'; 
+import Navbar from '@/components/UI/Navbar';
 
 function Page() {
   const { AddCart, products, setItem } = useProduct();
@@ -17,17 +17,11 @@ function Page() {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col lg:flex-row min-h-screen bg-white">
-        
-      
-        <div className="w-full lg:w-1/4 px-4 py-6 border-r border-gray-200">
-          <Filter />
-        </div>
-
-       
-        <main className="w-full lg:w-3/4 px-4 py-6 md:px-6 lg:px-10">
+      <div className="flex flex-col lg:flex-row min-h-screen  bg-white  bg-slate-100 w-full ">
+        <Filter />
+        <main className="w-full px-4 py-6 md:px-6 lg:px-10  min-h-screen bg-white ">
           <div className="text-gray-400 font-semibold text-lg sm:text-xl mb-4">
-            <Link href="/">Home</Link> / Men
+            <Link href="/">Home</Link> / ACCESSORIES
           </div>
 
           {filteredProducts.length === 0 ? (
@@ -49,7 +43,7 @@ function Page() {
                     }}
                   />
 
-                  <div className="text-base sm:text-lg font-bold">{product.name}</div>
+                  <div className="text-base sm:text-lg font-bold text-slate-700 ">{product.name}</div>
                   <div className="text-slate-500 text-sm sm:text-base">{product.category}</div>
                   <div className="text-base sm:text-lg font-semibold text-black">
                     $ {product.sale_price}

@@ -32,7 +32,7 @@ exports.createOrder = async (req, res) => {
         })
     }
 }
-//order create karna 
+
 exports.verifyPayment = async (req, res) => {
     try {
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature, customer } = req.body
@@ -42,7 +42,7 @@ exports.verifyPayment = async (req, res) => {
         const generated_signature = hmac.digest("hex")
 
         if (generated_signature == razorpay_signature) {
-            // "save information into  database"
+            
             await Payment.create({ razorpay_order_id, razorpay_payment_id, razorpay_signature, customer });
             return res.status(200).json({
                 success: true,

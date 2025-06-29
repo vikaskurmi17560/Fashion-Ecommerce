@@ -14,18 +14,18 @@ export async function handleCheckout(amount: number) {
     try{
         if (response.data.success) {
             options = {
-            "key": "rzp_test_3psAXU5WmuQ7qY", // Enter the Key ID generated from the Dashboard
-            "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "key": "rzp_test_3psAXU5WmuQ7qY", 
+            "amount": amount*100, 
             "currency": "INR",
-            "name": "Vikas Corp", //your business name
+            "name": "Vikas Corp", 
             "description": "Test Transaction",
             "image": "https://example.com/your_logo",
-            "order_id": response.data.data.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "order_id": response.data.data.id, 
     
-            "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
-                "name": "Gaurav Kumar", //your customer's name
+            "prefill": { 
+                "name": "Gaurav Kumar", 
                 "email": "gaurav.kumar@example.com",
-                "contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+                "contact": "9000090000" 
             },
             "notes": {
                 "address": "Razorpay Corporate Office"

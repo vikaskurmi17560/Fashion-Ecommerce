@@ -1,28 +1,41 @@
-'use client'
-import React from 'react'
+'use client';
+import React from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { green } from '@mui/material/colors';
 import { useSearchParams } from 'next/navigation';
+import { Button } from '@mui/material';
 
-function page() {
-    const search=useSearchParams();
-    const id=search.get("razorpay_payment_id")
-    return (
-        <main className='w-screen h-screen flex flex-col justify-center items-center p-32'>
+function PaymentSuccessPage() {
+  const search = useSearchParams();
+  const id = search.get('razorpay_payment_id');
 
-            <div className="p-10 h-[45%] w-[30%] text-white text-4xl flex flex-col border-2 border-white items-center gap-10 bg-gradient-to-b from-blue-400 via-blue-300 to-blue-400  rounded-3xl shadow-2xl shadow-blue-950">
-                <div className="flex flex-col items-center justify-center gap-10">
-                    <h1 className='font-bold p-4'> PAYMENT SUCCESS</h1>
-                    <p className='text-slate-500 text-sm font-thin'>{id}</p>
-                    <div className="h-[45%] w-[45%] text-center">
-                    <CheckCircleIcon sx={{ fontSize: 80, color: green[500] }} />
+  return (
+    <main className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-200 to-blue-500">
+      <div className="bg-white rounded-2xl shadow-2xl p-10 w-[90%] max-w-md flex flex-col items-center animate-fade-in">
+        <CheckCircleIcon sx={{ fontSize: 100, color: green[500] }} />
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mt-4">
+          Payment Successful!
+        </h1>
+        <p className="text-sm text-gray-600 mt-2 text-center">
+          Thank you for your payment.
+        </p>
+        {id && (
+          <p className="text-xs text-gray-500 mt-1 break-all text-center">
+            Payment ID: <span className="font-mono">{id}</span>
+          </p>
+        )}
 
-                    </div>
-                </div>
-
-            </div>
-        </main>
-    )
+        <Button
+          variant="contained"
+          color="success"
+          className="mt-6"
+          onClick={() => window.location.href = '/'}
+        >
+          Go to Home
+        </Button>
+      </div>
+    </main>
+  );
 }
 
-export default page
+export default PaymentSuccessPage;

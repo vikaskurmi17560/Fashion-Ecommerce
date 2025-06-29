@@ -16,7 +16,7 @@ function Page() {
         <main className="flex flex-col min-h-screen justify-between bg-slate-100">
             <Navbar />
 
-            <section className="flex flex-col items-center w-full px-4 py-6">
+            <section className="flex flex-col items-center w-full px-4 py-6 text-black">
 
                 <h1 className="text-slate-700 font-extrabold text-center text-3xl md:text-5xl lg:text-7xl mb-6">Cart</h1>
 
@@ -34,7 +34,7 @@ function Page() {
 
                     {carts && carts.length > 0 ? (
                         carts.map((cart: any) => (
-                            <div key={cart._id} className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 items-center text-center text-sm md:text-base py-4 px-2 border-b border-slate-200 bg-slate-50">
+                            <div key={cart._id} className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 items-center text-center  text-sm md:text-base py-4 px-2 border-b border-slate-200 bg-slate-50">
                                 <div onClick={() => deleteCart(cart._id)} className="cursor-pointer text-red-500">
                                     <CancelIcon />
                                 </div>
@@ -54,16 +54,16 @@ function Page() {
             </section>
 
 
-            <section className="w-full max-w-7xl px-4 pb-10 mx-auto">
+            <section className="w-full max-w-7xl px-4 pb-10 mx-auto text-black">
                 <div className="flex justify-end">
                     <div className="w-full sm:w-3/4 md:w-1/2 lg:w-1/3 border border-slate-300 rounded-lg bg-white shadow-md p-4 space-y-4">
                         <h2 className="text-2xl font-bold text-slate-700 border-b pb-2">Cart Total</h2>
                         <div className="flex justify-between text-lg border p-2 rounded-md">
-                            <span className="font-semibold text-black">Subtotal</span>
+                            <span className="font-semibold">Subtotal</span>
                             <span className="text-slate-600">${subtotal.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between text-lg border p-2 rounded-md">
-                            <span className="font-semibold text-black">Total</span>
+                            <span className="font-semibold">Total</span>
                             <span className="text-slate-600">${subtotal.toFixed(2)}</span>
                         </div>
                         <button

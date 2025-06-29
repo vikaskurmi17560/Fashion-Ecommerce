@@ -34,7 +34,7 @@ function Page() {
 
             {item && (
                 <section className='w-[95%] max-w-7xl mx-auto flex flex-col bg-slate-100 my-10 px-4'>
-                    {/* Product Header */}
+                   
                     <div className="w-full flex flex-col lg:flex-row gap-10 py-10">
                         <img src={item.cover_image} alt="img"
                             className='w-full lg:w-1/2 h-auto shadow-xl shadow-gray-100 rounded-md object-cover' />
@@ -53,7 +53,7 @@ function Page() {
                         </div>
                     </div>
 
-                    {/* Tabs */}
+                    
                     <div className="flex flex-wrap gap-3 p-4 border-t-2 border-slate-300">
                         {['Description', 'Additional Information', 'Reviews(0)'].map((tab, i) => (
                             <div key={i}
@@ -62,7 +62,7 @@ function Page() {
                         ))}
                     </div>
 
-                    {/* Tab Content */}
+                   
                     {option === 0 && (
                         <section className='w-full p-4'>
                             <h1 className='text-2xl md:text-3xl font-bold text-black mb-4'>Product Description</h1>
@@ -70,14 +70,14 @@ function Page() {
                                 Lorem ipsum dolor sit amet consectetur adipisicing elit. ...
                             </p>
 
-                            {/* Responsive Grid Images & Text */}
+                           
                             <div className="w-full flex flex-col items-center justify-center mt-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                                     <img src="https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2017/12/product-about-01.jpg" alt="img" className="w-full" />
                                     <img src="https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2017/12/product-about-04.jpg" alt="img" className="w-full" />
                                     <img src="https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2017/12/product-about-02.jpg" alt="img" className="w-full" />
 
-                                    {/* Text Blocks */}
+                                  
                                     <div className="flex flex-col gap-4 p-2">
                                         {[1, 2, 3].map(i => (
                                             <div key={i} className="flex flex-col gap-1">
@@ -87,7 +87,6 @@ function Page() {
                                         ))}
                                     </div>
 
-                                    {/* Additional Text Blocks */}
                                     <div className="flex flex-col gap-4 p-2">
                                         {[4, 5, 6].map(i => (
                                             <div key={i} className="flex flex-col gap-1">

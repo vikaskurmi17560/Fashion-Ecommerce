@@ -32,7 +32,7 @@ function AllProducts() {
               }}
             />
 
-            <div className="text-base sm:text-lg font-bold">{product.name}</div>
+            <div className="text-base sm:text-lg font-bold text-slate-700">{product.name}</div>
             <div className="text-slate-500 text-sm sm:text-base">{product.category}</div>
             <div className="text-base sm:text-lg font-semibold text-black">$ {product.sale_price}</div>
 

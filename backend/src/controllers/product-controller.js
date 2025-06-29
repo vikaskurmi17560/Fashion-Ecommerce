@@ -9,7 +9,7 @@ exports.createProduct = async (req, res) => {
   try {
     
     console.log(req.files);
-    //check karenge ki req.file hai ki nhi
+    
     if(req.files){
       
       if(req.files.cover_image){
@@ -17,16 +17,16 @@ exports.createProduct = async (req, res) => {
         const uploadedImage=await uploadSingleImage(path);
         newProduct.cover_image=uploadedImage.secure_url
       }
-      //check karenge ki req.file.images hai ki nhi
+     
       if(req.files.images){
         const paths=[];
-        //path lena hai
+      
         req.files.images.forEach(image => {
           paths.push(image.path);
         });
-        //path bhejna hai
+       
         const uploadedImages=await uploadMultipleImages(paths);
-        //images related information ko store karna hai
+       
         newProduct.images=uploadedImages.map((image)=>{
           return image.secure_url
         })
@@ -91,9 +91,8 @@ exports.get_product= async (req,res)=>{
 //--------------------------------------------->Update Product function<-----------------------------------------------------------------------
 exports.update_products= async (req,res)=>{
  
-    //first d-structure kro fields ko from the frontend
     const {name, original_price, sale_price,brief_description,shipping_charge,stock,description,features,average_rating,colors,sizes,category,productId}=req.body;
-    // also take a product_id
+  
     const {product_id}=req.query
     if(!product_id){
       return res.status(500).json({
@@ -103,8 +102,7 @@ exports.update_products= async (req,res)=>{
     }
 
     console.log("req.file hai ye",req.files);
-    //we apply logic if updated field is available then update 
-    // we take update object
+   
     const  updateObject={};
     if(name){
       updateObject.name=name;

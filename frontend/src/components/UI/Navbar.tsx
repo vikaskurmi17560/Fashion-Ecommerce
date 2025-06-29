@@ -128,7 +128,7 @@ function Navbar() {
             <h1 className="text-lg font-semibold">Shopping Cart</h1>
             <button onClick={() => setSeeBucket(false)}><CancelIcon /></button>
           </div>
-          <div className="h-[68%] w-full overflow-auto flex flex-col items-center gap-4 p-4">
+          <div className="h-[68%] w-full overflow-auto flex flex-col items-center gap-4 p-4 text-black">
             {carts?.map((cart: any) => (
               <div key={cart._id} className="flex w-full border-b border-gray-300 p-2 gap-4">
                 <img src={cart.product_id.cover_image} alt="img" className="w-20 h-24 object-cover" />
