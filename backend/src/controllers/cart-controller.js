@@ -2,7 +2,7 @@ const Carts = require("../models/cart");
 
 //------------------------------------------cart create--------------------------------------------------------------------------------------------
 exports.cartCreate = async (req, res) => {
-    const { customer_id, product_id, total_price, quantity, color, size ,name,image} = req.body;
+    const { customer_id, product_id, total_price, quantity, color, size, name, image } = req.body;
 
     try {
 
@@ -14,7 +14,7 @@ exports.cartCreate = async (req, res) => {
             });
         }
 
-        const cart = await Carts.create({ customer_id, product_id, total_price, quantity, color, size , name ,image });
+        const cart = await Carts.create({ customer_id, product_id, total_price, quantity, color, size, name, image });
 
         return res.status(200).json({
             success: true,
@@ -23,39 +23,39 @@ exports.cartCreate = async (req, res) => {
         });
     }
     catch (error) {
-        console.log("create cart error:",error);
+        console.log("create cart error:", error);
         return res.status(500).json({
             success: false,
             message: error.message,
         })
     }
-    
+
 }
 // --------------------------------Cart get-------------------------------------------------------------------------
-exports.cartGet= async (req,res)=>{
-  
-    const{customer_id}=req.query;
+exports.cartGet = async (req, res) => {
 
-    try{
-        const CartExists= await Carts.find({customer_id:customer_id}).populate("product_id");
+    const { customer_id } = req.query;
 
-        if(CartExists){
-           return res.status(200).json({
-            success:true,
-            message:res.message,
-            data:CartExists,
-           })
+    try {
+        const CartExists = await Carts.find({ customer_id: customer_id }).populate("product_id");
+
+        if (CartExists) {
+            return res.status(200).json({
+                success: true,
+                message: res.message,
+                data: CartExists,
+            })
         }
         return res.status(200).json({
-            success:false,
-            message:"Error in data fetching"
+            success: false,
+            message: "Error in data fetching"
         })
 
     }
-    catch(error){
+    catch (error) {
         return res.status(500).json({
-            success:false,
-            message:error.message,
+            success: false,
+            message: error.message,
         })
     }
 }
@@ -97,20 +97,46 @@ exports.cartUpdate = async (req, res) => {
     }
 }
 //-----------------------------------------------cart Delete-----------------------------------------------------------------------------
-exports.cartDelete = async (req,res)=>{
-    const {cart_id}=req.query;
+exports.cartDelete = async (req, res) => {
+    const { cart_id } = req.query;
 
-    try{
+    try {
         await Carts.findByIdAndDelete(cart_id);
-       return res.status(200).json({
-        success:true,
-        message:"cart Delete Successfully",
-       });
+        return res.status(200).json({
+            success: true,
+            message: "cart Delete Successfully",
+        });
     }
-    catch(error){
+    catch (error) {
         return res.status(500).json({
-            success:false,
-            message:"cart_id in invalid or other error in delete cart function",
+            success: false,
+            message: "cart_id in invalid or other error in delete cart function",
         })
     }
 }
+
+exports.cartDeletebyUser = async (req, res) => {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+        return res.status(400).json({
+            success: false,
+            message: "user_id is required in query params",
+        });
+    }
+
+    try {
+        const result = await Carts.deleteMany({ customer_id:user_id });
+
+        return res.status(200).json({
+            success: true,
+            message: `${result.deletedCount} cart item(s) deleted successfully.`,
+        });
+    } catch (error) {
+        console.error("Delete cart error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to delete cart items. Internal server error.",
+        });
+    }
+};

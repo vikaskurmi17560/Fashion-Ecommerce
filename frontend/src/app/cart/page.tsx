@@ -67,7 +67,10 @@ function Page() {
                             <span className="text-slate-600">${subtotal.toFixed(2)}</span>
                         </div>
                         <button
-                            onClick={() => router.push('/checkout')}
+                            onClick={() => {
+                                router.push('/checkout'); 
+                                localStorage.setItem('checkout_subtotal', subtotal.toString());}
+                            }
                             className="w-full py-3 text-xl font-bold text-white bg-blue-600 hover:bg-black transition rounded"
                         >
                             Checkout

@@ -1,7 +1,5 @@
-// Require mongoose
 const mongoose = require("mongoose");
 
-// Create Schema
 const OrderSchema = new mongoose.Schema(
   {
     customer_id: {
@@ -12,62 +10,79 @@ const OrderSchema = new mongoose.Schema(
     payment_id: {
       type: String,
       required: true,
+      trim: true,
     },
     total: {
       type: Number,
       required: true,
+      min: 0,
     },
-    first_name: {
+    customer_name: {
       type: String,
       required: true,
-    },
-    last_name: {
-      type: String,
-      required: true,
+      trim: true,
     },
     country: {
       type: String,
       required: true,
+      trim: true,
     },
     phone_no: {
       type: String,
       required: true,
       validate: {
         validator: function (v) {
-          return /^\d{10,15}$/.test(v); 
+          return /^\d{10,15}$/.test(v);
         },
         message: (props) => `${props.value} is not a valid phone number!`,
       },
+      trim: true,
     },
     email: {
       type: String,
       required: true,
+      lowercase: true,
+      trim: true,
       validate: {
         validator: function (v) {
-          return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(v); 
+          return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(v);
         },
         message: (props) => `${props.value} is not a valid email!`,
       },
     },
-    order_notes: {
-      type: String,
-      required: false, 
-    },
     address: {
-      type: mongoose.Schema.Types.ObjectId, 
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
       required: true,
     },
     payment_method: {
       type: String,
       required: true,
+      trim: true,
     },
+    items: [
+      {
+        product_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
+        price: {
+          type: Number,
+          required: true,
+          min: 0,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
 
-// Create model
-const Order = mongoose.model("Order", OrderSchema);
+const Orders = mongoose.model("Orders", OrderSchema);
 
-// Export model
-module.exports = Order;
+module.exports = Orders;

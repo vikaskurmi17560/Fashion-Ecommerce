@@ -3,18 +3,17 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const sendEmail = async ({ email, resetUrl }) => {
-    // Create a transporter object using SMTP transport
     const transporter = nodemailer.createTransport({
-        service: "Gmail", // You can use other services like 'Yahoo', 'Outlook', etc.
+        service: "Gmail", 
         auth: {
             user: process.env.EMAIL_USER, // Your email address
             pass: process.env.EMAIL_KEY, // Your email password or an app-specific password
         },
     });
 
-    // Set up email data
+    
     const mailOptions = {
-        from: '"E-commerce Team" <vkurmi307@gmail.com>', // Display name and email
+        from: '"E-commerce Team" <vkurmi307@gmail.com>', 
         to: email,
         subject: "Reset Your Password",
         html: `
@@ -55,7 +54,6 @@ const sendEmail = async ({ email, resetUrl }) => {
     };
 
     try {
-        // Send the email
         await transporter.sendMail(mailOptions);
         console.log('Password reset email sent successfully');
     } catch (error) {

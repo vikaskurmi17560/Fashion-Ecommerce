@@ -7,7 +7,7 @@ const { uploadSingleImage } = require("../services/cloudinary");
 
 
 exports.signup = async (req, res) => {
-    // Extracting data from the request body
+    
     const { name, email, phone_no, password, confirm_password, gender } = req.body;
     let profileImage=null;
     if(req.file){
@@ -21,26 +21,23 @@ exports.signup = async (req, res) => {
     
 
     try {
-        // Check if a user with the given email already exists
+       
         const customerExists = await Customers.findOne({ email });
         if (customerExists) {
             return res.status(400).json({
                 success: true,
-                message: "User created buddy"
+                message: "User created"
             });
         }
         console.log(req.body);
-        // Hash the user's password
-        // const hashedPassword = await bcrypt.hash(password, 12);
-    
-        // Create ans save a new customer 
+       
         const newCustomer = await Customers.create({
             profile:profileImage,
             name,
             email,
             phone_no,
             password: password,
-            confirm_password: confirm_password,  // Typically store hashed version if needed
+            confirm_password: confirm_password,  
             gender,
         });
         await WelcomeEmail(email);
@@ -59,11 +56,11 @@ exports.signup = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-    // Extracting data from the request body
+    
     const { email, password } = req.body;
 
     try {
-        // Find the user by email
+      
         const customerExists = await Customers.findOne({ email });
         if (!customerExists) {
             return res.status(400).json({
@@ -72,7 +69,7 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Check if the password matches
+       
         const isPasswordMatched = await bcrypt.compare(password, customerExists.password);
         if (!isPasswordMatched) {
             return res.status(400).json({
@@ -81,10 +78,10 @@ exports.login = async (req, res) => {
             });
         }
 
-        // Create the JWT token payload
+        
         const payload = { email: customerExists.email, name: customerExists.name, _id: customerExists._id };
 
-        // Sign the token
+        
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES
         });
@@ -129,7 +126,11 @@ exports.forgetPassword = async (req, res) => {
         // const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/customer/reset-password?token=${resetToken}`
         const resetUrl=`http://localhost:3000/reset-password?token=${resetToken}`
         //send the link in email
-
+         await sendEmail({
+            email: user.email,
+            subject: "Password Reset Request",
+            resetUrl,
+        });
         return res.status(200).json({
             success: true,
             message: "reset password Successfully",
