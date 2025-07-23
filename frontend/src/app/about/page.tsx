@@ -50,7 +50,7 @@ const Teams = [
 
 function Page() {
   return (
-    <div className="w-full flex flex-col">
+    <div className="text-black w-full flex flex-col">
       <div className='w-full bg-fixed h-[75vh] bg-[url("https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2021/05/banner-04.jpg")] bg-no-repeat bg-cover'>
         <Navbar />
         <h1 className='text-center text-white text-5xl sm:text-6xl md:text-7xl font-extrabold mt-44 sm:mt-52 md:mt-56'>About Us</h1>

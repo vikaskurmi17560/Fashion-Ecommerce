@@ -36,7 +36,7 @@ const contactDetails = [
 function Page() {
   return (
     <main className="w-full h-auto">
-      {/* Header Section */}
+      
       <header className="flex flex-col items-center justify-center bg-[url('https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2019/12/banner-06.jpg')] bg-cover bg-center w-full h-[85vh]">
         <Navbar />
         <div className="w-[90%] flex items-center justify-center text-center h-full">
@@ -46,16 +46,16 @@ function Page() {
         </div>
       </header>
 
-      {/* Main Section */}
+      
       <section className="flex flex-col items-center w-full bg-slate-100 py-12">
-        {/* Heading */}
+        
         <div className="text-center px-4">
           <h2 className="text-lg sm:text-xl font-bold text-black">Have any queries?</h2>
           <p className="text-3xl sm:text-4xl font-bold text-black mt-2">We're here to help</p>
           <div className="w-16 h-1 bg-red-950 my-4 mx-auto"></div>
         </div>
 
-        {/* Contact Cards */}
+        
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4 py-6 max-w-6xl">
           {contactDetails.map((contact) => (
             <div
@@ -69,9 +69,9 @@ function Page() {
           ))}
         </div>
 
-        {/* Contact Form Section */}
+        
         <section className="flex flex-col lg:flex-row gap-6 px-4 py-10 w-full max-w-6xl">
-          {/* Text Side */}
+          
           <aside className="w-full lg:w-1/2 flex flex-col gap-4">
             <h2 className="text-xl font-bold text-black">Don't be a stranger!</h2>
             <div className="text-2xl sm:text-3xl font-bold text-black">
@@ -83,7 +83,7 @@ function Page() {
             </p>
           </aside>
 
-          {/* Form Side */}
+          
           <aside className="w-full lg:w-1/2 bg-white rounded-xl shadow-md">
             <form className="w-full p-6 sm:p-10 flex flex-col gap-4">
               <input

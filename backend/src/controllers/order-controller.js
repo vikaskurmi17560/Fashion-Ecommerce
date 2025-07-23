@@ -35,6 +35,7 @@ exports.createOrder = async (req, res) => {
         product_id: item.product_id,
         quantity: item.quantity,
         price: item.price,
+        size:item.size
       })),
     });
 
@@ -56,35 +57,19 @@ exports.createOrder = async (req, res) => {
 };
 
 
-exports.getOrder = async (req, res) => {
 
-  const { order_id } = req.body
-  try {
-    const order = await Orders.find({ order_id });
-
-    return res.status(200).json({
-      success: true,
-      message: "Order fetch successfully",
-      data: order,
-    })
-  }
-  catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    })
-
-  }
-}
 
 exports.getOrder = async (req, res) => {
-  const { order_id } = req.params;
+  const { order_id } = req.query
 
   try {
-    const order = await Orders.findById(order_id);
+    const order = await Orders.findById(order_id).select("items.quantity items.price total payment_id createdAt").populate({
+        path: "items.product_id",
+        select: "name cover_image color",
+      })
 
     if (!order) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: "Order not found",
       });
@@ -93,9 +78,7 @@ exports.getOrder = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Order fetched successfully",
-      data: {
-        order,
-      },
+      data:order,
     });
   } catch (error) {
     return res.status(500).json({
@@ -107,8 +90,8 @@ exports.getOrder = async (req, res) => {
 
 exports.getAllOrder = async (req, res) => {
   try {
-    const user_id = req.query;
-    const userExist = await Customer.findById({ _id: user_id });
+    const {user_id} = req.query;
+    const userExist = await Customer.findById(user_id);
     if (!userExist) {
       return res.status(400).json({
         success: false,
@@ -116,7 +99,10 @@ exports.getAllOrder = async (req, res) => {
       })
     }
 
-    const ALLorder = await Order.find({ customer_id: user_id });
+    const ALLorder = await Orders.find({ customer_id: user_id }).populate({
+        path: "address",
+        select: "firstname lastname country street city state pincode",
+      });
     return res.status(200).json({
       success: true,
       message: "Get all order data of particular user",

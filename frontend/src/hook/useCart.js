@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
     try {
       const response = await GetCart({});
       if (response.success) {
-        setCarts(response.data); // Update state with the fetched cart data
+        setCarts(response.data); 
       }
     } catch (error) {
       console.error('Error fetching carts:', error);
@@ -24,7 +24,7 @@ import toast from 'react-hot-toast';
     try {
       const response = await CartDelete({ cart_id: id });
       if (response.success) {
-        getCarts(); // Refresh cart data after deletion
+        getCarts(); 
         toast.success("Item Removed")
       }
     } catch (error) {
@@ -32,7 +32,7 @@ import toast from 'react-hot-toast';
     }
   }
 
-  return { carts, getCarts, deleteCart }; // Return state and functions
+  return { carts, getCarts, deleteCart }; 
 }
 
 export default useCartInfo;

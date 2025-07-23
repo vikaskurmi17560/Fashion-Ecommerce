@@ -11,7 +11,7 @@ function useProduct() {
   
     useEffect(() => {
       getProducts();
-      const id = localStorage.getItem("user_id");
+      const id = localStorage.getItem("eco_user_id");
       if (id) {
         setUserId(id);
       }

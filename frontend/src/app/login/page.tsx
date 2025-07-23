@@ -23,12 +23,12 @@ function Page() {
       const response = await LogIn(data);
       if (response.success) {
         toast.success("Account Login successfully");
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("user_id", response.user._id);
-        localStorage.setItem("user_name", response.user.name);
-        localStorage.setItem("user_email", response.user.email);
-        localStorage.setItem("phone", response.user.phone_no);
-        localStorage.setItem("user_image", response.user.profile);
+        localStorage.setItem("eco_token", response.token);
+        localStorage.setItem("eco_user_id", response.user._id);
+        localStorage.setItem("eco_user_name", response.user.name);
+        localStorage.setItem("eco_user_email", response.user.email);
+        localStorage.setItem("eco_phone", response.user.phone_no);
+        localStorage.setItem("eco_user_image", response.user.profile);
         router.replace("/");
       }
     } catch (error: any) {

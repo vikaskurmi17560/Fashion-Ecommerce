@@ -92,7 +92,7 @@ function FeatureSection() {
                         <div className="p-4">
                             <h2 className="text-black lg:text-xl md:text-sm text-[12px] font-semibold">{product.name}</h2>
                             <h3 className="text-gray-600 lg:text-sm md:text-[15px] text-[8px]">{product.category}</h3>
-                            <p className="text-black lg:text-sm md:text-[15px] text-[8px] font-bold">${product.price}</p>
+                            <p className="text-black lg:text-sm md:text-[15px] text-[8px] font-bold">₹{product.price}</p>
                         </div>
                     </article>
                 ))}

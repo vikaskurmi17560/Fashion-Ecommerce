@@ -19,7 +19,7 @@ export async function AddToCart(body: any) {
 
 export async function GetCart() {
   try {
-    const id = localStorage.getItem("user_id");
+    const id = localStorage.getItem("eco_user_id");
     const response = await axios.get(`${CartGetUrl}?customer_id=${id}`);
     return response.data;
   } catch (error) {
@@ -42,7 +42,7 @@ export async function CartDelete(params: any) {
 }
 export async function CartDeleteByUser() {
   try {
-    const user_id = localStorage.getItem("user_id");
+    const user_id = localStorage.getItem("eco_user_id");
 
     if (!user_id) throw new Error("User not logged in");
 

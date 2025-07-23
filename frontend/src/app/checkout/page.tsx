@@ -10,6 +10,7 @@ import { handleCheckout } from '@/networks/paymentnetworks';
 import { DeleteAddress, GetAddress } from '@/networks/addressnetworks';
 import useCart from '@/hook/useCart';
 import toast from 'react-hot-toast';
+import Carts from '@/components/UI/Carts';
 
 interface AddressType {
   _id: string;
@@ -22,22 +23,39 @@ interface AddressType {
   pincode: string;
   street: string;
 }
+interface CartItem {
+  _id: string;
+  total_price: number;
+  quantity: number;
+ 
+}
+
 
 function CheckoutPage() {
   const [login, setLogin] = useState(false);
   const [addresses, setAddresses] = useState<AddressType[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [selectedPayment, setSelectedPayment] = useState('');
-  const [totalPrice, setTotalPrice] = useState(0);
-  const { carts } = useCart();
+  const { carts, deleteCart } = useCart();
   const router = useRouter();
+
+  
+const typedCarts: CartItem[] = carts || [];
+
+  const subtotal = typedCarts.reduce(
+    (acc: number, item: CartItem) => acc + item.total_price * item.quantity,
+    0
+  );
+
+   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('checkout_subtotal', subtotal.toString());
+    }
+  }, [subtotal]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const subtotalString = localStorage.getItem('checkout_subtotal');
-      if (subtotalString) setTotalPrice(parseFloat(subtotalString));
-
-      const id = localStorage.getItem('user_id');
+      const id = localStorage.getItem('eco_user_id');
       if (id) {
         setLogin(true);
         getAddress(id);
@@ -72,8 +90,6 @@ function CheckoutPage() {
     }
   };
 
-  const formatPrice = (amount: number) => `$${amount.toFixed(2)}`;
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -81,7 +97,7 @@ function CheckoutPage() {
     if (!selectedPayment) return toast.error('Please select a payment method');
 
     try {
-      await handleCheckout(totalPrice*100, router, selectedAddressId, carts);
+      await handleCheckout(subtotal * 100, router, selectedAddressId, carts);
     } catch (err) {
       toast.error('Payment failed. Try again.');
     }
@@ -101,7 +117,7 @@ function CheckoutPage() {
             <button type="button" className="text-blue-600 hover:underline">Click here to enter your code</button>
           </div>
 
-          {/* Address Section */}
+          
           <section className="w-full bg-white p-4 rounded shadow text-slate-800">
             <h2 className="text-lg font-semibold mb-4">Select Delivery Address</h2>
             <div className="flex flex-col gap-4 mb-4">
@@ -121,7 +137,7 @@ function CheckoutPage() {
                         <strong>{address.firstname} {address.lastname}</strong><br />
                         {address.street}, {address.city}, {address.state} - {address.pincode}, {address.country}
                       </p>
-                      <h1 onClick={() => handleDelete(address._id)} className="text-red-500 hover:text-red-700">
+                      <h1 onClick={() => handleDelete(address._id)} className="text-red-500 hover:text-red-700 cursor-pointer">
                         <DeleteIcon />
                       </h1>
                     </label>
@@ -140,25 +156,13 @@ function CheckoutPage() {
             </button>
           </section>
 
+         
           <section className="flex flex-col lg:flex-row gap-6 text-slate-800">
             <div className="w-full bg-white border rounded shadow p-4">
               <h2 className="text-xl font-bold text-black mb-4">Your Order</h2>
-              <div className="grid grid-cols-2 text-sm md:text-base font-semibold border-b pb-2 mb-4">
-                <span>Product</span>
-                <span className="text-right">Subtotal</span>
-              </div>
 
-              <div className="grid grid-cols-2 text-sm md:text-base border-b py-2">
-                <span>Item Details</span>
-                <span className="text-right">{formatPrice(totalPrice)}</span>
-              </div>
-              <div className="grid grid-cols-2 text-sm md:text-base border-b py-2">
-                <span>Subtotal</span>
-                <span className="text-right">{formatPrice(totalPrice)}</span>
-              </div>
-              <div className="grid grid-cols-2 text-sm md:text-base py-2 font-bold">
-                <span>Total</span>
-                <span className="text-right">{formatPrice(totalPrice)}</span>
+              <div className="text-sm md:text-base border-b py-2">
+               <Carts carts={carts} onRemove={deleteCart} />
               </div>
 
               <div className="mt-6 flex flex-col gap-4 text-sm md:text-base text-slate-800">

@@ -185,3 +185,33 @@ exports.resetPassword = async (req, res) => {
     }
 }
 
+exports.getuserdata= async(req,res)=>{
+    try{
+        const {id}=req.query
+        if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing user id in query string (?id=...).",
+      });
+    }
+        const userExists= await Customers.findById(id);
+        if(!userExists){
+            return res.status(404).json({
+                success:false,
+                message:"User not Exists or not Exists"
+            })
+        }
+
+        return res.status(200).json({
+            success:true,
+            message:"data get successfully",
+            userExists
+        })
+    }
+    catch{
+      return res.status(500).json({
+            success: false,
+            message: "error",
+        });   
+    }
+}

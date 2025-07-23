@@ -42,7 +42,7 @@ function Form() {
   const [customerId, setCustomerId] = useState<string | null>(null);
 
   useEffect(() => {
-    setCustomerId(localStorage.getItem("user_id"));
+    setCustomerId(localStorage.getItem("eco_user_id"));
   }, []);
 
   const formHandle = async (data: AddressForm) => {

@@ -44,7 +44,7 @@ function Page() {
                             </div>
                             <div className="text-black text-lg">{item.category}</div>
                             <div className="text-black text-2xl font-extrabold">{item.name}</div>
-                            <div className="text-slate-600 text-xl">${item.original_price} – ${item.sale_price}</div>
+                            <div className="text-slate-600 text-xl">₹{item.original_price} – ₹{item.sale_price}</div>
                             <div className="text-base text-slate-500">{item.brief_description}</div>
                             <div className="text-black text-sm md:text-base">{item.colors}</div>
                             <button onClick={() => AddCart(item)} className="bg-blue-500 text-lg font-bold text-white hover:bg-black py-2 rounded-md w-full md:w-1/2 mt-4">

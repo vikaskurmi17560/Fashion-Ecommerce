@@ -7,13 +7,13 @@ import { CreateOrder } from './ordernetworks';
 
 export async function handleCheckout(amount: number, router: any, selectedAddressId: string, carts: any[]) {
 
-  const customer = localStorage.getItem("user_id");
+  const customer = localStorage.getItem("eco_user_id");
   const body = { amount};
   try {
     const customer_id = customer;
-    const customer_name = localStorage.getItem("user_name") || "Customer";
-    const email = localStorage.getItem("user_email") || "example@example.com";
-    const phone_no = localStorage.getItem("phone") || "9000090000";
+    const customer_name = localStorage.getItem("eco_user_name") || "Customer";
+    const email = localStorage.getItem("eco_user_email") || "example@example.com";
+    const phone_no = localStorage.getItem("eco_phone") || "9000090000";
     const address = selectedAddressId;
     const country = "India";
     const payment_method = "Razorpay";
@@ -48,7 +48,8 @@ export async function handleCheckout(amount: number, router: any, selectedAddres
             const items = carts.map((cart: any) => ({
               product_id: cart.product_id._id,
               quantity: cart.quantity,
-              price: cart.total_price / cart.quantity
+              price: cart.total_price / cart.quantity,
+              size:cart.size
             }));
 
             const orderPayload = {
