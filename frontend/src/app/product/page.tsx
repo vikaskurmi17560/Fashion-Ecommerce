@@ -3,13 +3,13 @@ import Navbar from '@/components/UI/Navbar'
 import React, { useEffect, useState } from 'react'
 import Footer from '@/components/UI/Footer'
 import StarIcon from '@mui/icons-material/Star';
-import useProduct from '@/hook/useProduct';
 import { useSearchParams } from 'next/navigation';
 import { GetProduct } from '@/networks/productnetworks';
 import Link from 'next/link';
+import useCart from '@/hook/useCart';
 
 function Page() {
-    const { AddCart } = useProduct();
+    const { AddCart } = useCart();
     const [item, setItem] = useState<any>(null);
     const [option, setOption] = useState<number>(0);
     const params = useSearchParams();

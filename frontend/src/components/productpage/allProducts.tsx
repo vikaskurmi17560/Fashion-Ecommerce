@@ -5,11 +5,12 @@ import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
 import useProduct from '@/hook/useProduct';
 import { useRouter } from 'next/navigation';
+import useCart from '@/hook/useCart';
 
 function AllProducts() {
-  const { AddCart, products, setItem } = useProduct();
+  const { products, setItem } = useProduct();
+  const { AddCart} =useCart();
   const router = useRouter();
-
   return (
     <main className="w-full min-h-screen bg-white px-4 py-8 md:px-10 lg:px-20">
       <div className="text-gray-400 font-semibold text-lg sm:text-xl mb-4">
@@ -55,7 +56,9 @@ function AllProducts() {
 
             <button
               className="w-full py-2 mt-2 bg-blue-600 text-white text-sm sm:text-base font-semibold hover:bg-black transition rounded-md"
-              onClick={() => AddCart(product)}
+              onClick={() => {
+                AddCart(product)
+              }}
             >
               ADD TO CART
             </button>

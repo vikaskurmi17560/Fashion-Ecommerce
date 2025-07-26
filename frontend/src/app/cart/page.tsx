@@ -7,7 +7,7 @@ import useCart from '@/hook/useCart';
 import { useRouter } from 'next/navigation';
 
 export default function AccountPage() {
-    const { carts, deleteCart } = useCart();
+    const { carts} = useCart();
     const router = useRouter();
 
     const subtotal =
@@ -23,8 +23,6 @@ export default function AccountPage() {
             <section className="flex flex-col items-center w-full px-4 py-6">
 
                 <Cart
-                    carts={carts}
-                    onRemove={deleteCart}
                     onCheckout={() => {
                         localStorage.setItem('checkout_subtotal', subtotal.toString());
                         router.push('/checkout');

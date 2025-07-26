@@ -7,17 +7,16 @@ import {
 } from "@/constants"
 import axios from "axios";
 
-export async function SignUp(formdata: any) {
-    try {
-        const response = await axios.post(signUpUrl, formdata, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
-        console.log(response.data);
-        return response.data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
+export async function SignUp(formData: FormData) {
+  try {
+    const response = await axios.post(signUpUrl, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Signup Error:', error.response?.data || error.message);
+    throw error;
+  }
 }
 
 export async function LogIn(formdata: any) {

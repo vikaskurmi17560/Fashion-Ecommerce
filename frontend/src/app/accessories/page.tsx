@@ -7,9 +7,11 @@ import useProduct from '@/hook/useProduct';
 import { useRouter } from 'next/navigation';
 import Filter from '@/components/productpage/filters';
 import Navbar from '@/components/UI/Navbar';
+import useCart from '@/hook/useCart';
 
 function Page() {
-  const { AddCart, products, setItem } = useProduct();
+  const { AddCart} = useCart();
+  const {products, setItem } = useProduct();
   const router = useRouter();
 
   const filteredProducts = products.filter(item => item.category === 'accessories');

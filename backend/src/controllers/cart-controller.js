@@ -61,41 +61,76 @@ exports.cartGet = async (req, res) => {
 }
 //------------------------------------------cart update------------------------------------------------------------------------------------
 exports.cartUpdate = async (req, res) => {
+  const { item_id, user_id } = req.query;
+  const { quantity } = req.body;
 
-    const { cart_id } = req.query;
+  try {
+    const quantitySchema = Carts.schema.path('quantity');
+    const maxQuantity = quantitySchema.options.max;
 
+    const existingCart = await Carts.findOne({ product_id: item_id, customer_id: user_id });
 
-    const { total_price, quantity, color, size } = req.body;
-
-    const update_object = {};
-    if (total_price) {
-        update_object.total_price = total_price;
-    }
-    if (quantity) {
-        update_object.quantity = quantity;
-    }
-    if (color) {
-        update_object.color = color;
-    }
-    if (size) {
-        update_object.size = size;
+    if (!existingCart) {
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found",
+      });
     }
 
-    try {
-        const updatedcart = await findByIdAndUpdate(cart_id, update_object, { new: true, });
-        return res.status(200).json({
-            success: true,
-            message: "Cart update Successfully",
-            data: updatedcart,
-        })
+    const newQuantity = existingCart.quantity + quantity;
+
+    if (newQuantity > maxQuantity) {
+      return res.status(400).json({
+        success: false,
+        message: `Quantity must not exceed ${maxQuantity}`,
+      });
     }
-    catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "error in update carts",
-        })
+
+    const updatedCart = await Carts.findOneAndUpdate(
+      { product_id: item_id, customer_id: user_id },
+      { $inc: { quantity } },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Quantity updated successfully",
+      data: updatedCart,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error updating cart",
+      error: error.message,
+    });
+  }
+};
+//-----------------------------------------------exists item-------------------------------------------------------------------------------
+exports.ItemExists = async (req, res) => {
+  try {
+    const { product_id, user_id } = req.query;
+
+    if (!product_id || !user_id) {
+      return res.status(400).json({ success: false, message: "Missing product_id or user_id" });
     }
-}
+
+    const item = await Carts.findOne({
+      product_id: product_id,
+      customer_id: user_id
+    });
+
+    if (item) {
+      return res.status(200).json({ success: true, exists: true, data: item });
+    } else {
+      return res.status(404).json({ success: false, exists: false });
+    }
+  } catch (error) {
+    console.error("Error checking item existence:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
 //-----------------------------------------------cart Delete-----------------------------------------------------------------------------
 exports.cartDelete = async (req, res) => {
     const { cart_id } = req.query;
@@ -126,7 +161,7 @@ exports.cartDeletebyUser = async (req, res) => {
     }
 
     try {
-        const result = await Carts.deleteMany({ customer_id:user_id });
+        const result = await Carts.deleteMany({ customer_id: user_id });
 
         return res.status(200).json({
             success: true,

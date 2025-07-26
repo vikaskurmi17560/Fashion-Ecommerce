@@ -1,3 +1,4 @@
+'use client'
 import Navbar from '@/components/UI/Navbar'
 import React from 'react'
 import Filters from '@/components/productpage/filters'

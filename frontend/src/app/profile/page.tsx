@@ -153,7 +153,7 @@ export default function Page() {
                     Change Profile
                   </button>
 
-                  {/* Profile Image + User Info */}
+          
                   <div className="flex flex-col md:flex-row items-center gap-4 mb-6 mt-6 md:mt-0">
                     <img
                       src={userData.profile}
@@ -168,7 +168,7 @@ export default function Page() {
                     </div>
                   </div>
 
-                  {/* User Details */}
+                 
                   <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                     <div className="bg-gray-50 p-2 rounded border">
                       <p className="text-gray-500 text-sm">Email</p>
@@ -208,8 +208,6 @@ export default function Page() {
 
           {activeTab === 'cart' && (
             <Carts
-              carts={carts}
-              onRemove={deleteCart}
               onCheckout={() => {
                 if (typeof window !== 'undefined') {
                   localStorage.setItem('checkout_subtotal', subtotal.toString());

@@ -36,7 +36,7 @@ function CheckoutPage() {
   const [addresses, setAddresses] = useState<AddressType[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [selectedPayment, setSelectedPayment] = useState('');
-  const { carts, deleteCart } = useCart();
+  const { carts } = useCart();
   const router = useRouter();
 
   
@@ -162,7 +162,7 @@ const typedCarts: CartItem[] = carts || [];
               <h2 className="text-xl font-bold text-black mb-4">Your Order</h2>
 
               <div className="text-sm md:text-base border-b py-2">
-               <Carts carts={carts} onRemove={deleteCart} />
+               <Carts/>
               </div>
 
               <div className="mt-6 flex flex-col gap-4 text-sm md:text-base text-slate-800">

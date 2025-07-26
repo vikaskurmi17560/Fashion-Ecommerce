@@ -1,7 +1,7 @@
 'use client';
 import { GetALLOrders } from '@/networks/ordernetworks';
 import React, { useEffect, useState } from 'react';
-import OrderDetails from './Orderdetails'; 
+import OrderDetails from './Orderdetails';
 
 function Orders() {
   const [orderData, setOrderData] = useState<any>(null);
@@ -11,7 +11,6 @@ function Orders() {
     try {
       const orders = await GetALLOrders();
       if (orders.success) {
-        console.log('orders:', orders);
         setOrderData(orders.ALLorder);
       }
     } catch (error) {
@@ -40,44 +39,43 @@ function Orders() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-start">
-                  <span className="w-32 font-semibold text-gray-700">Customer:</span>
+                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Customer:</span>
                   <span className="text-gray-600">
                     {order.address.firstname} {order.address.lastname}
                   </span>
                 </div>
 
                 <div className="flex items-start">
-                  <span className="w-32 font-semibold text-gray-700">Address:</span>
+                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Address:</span>
                   <span className="text-gray-600">
-                    {order.address.street}, {order.address.city}, {order.address.state} -{' '}
-                    {order.address.pincode}
+                    {order.address.street}, {order.address.city}, {order.address.state} - {order.address.pincode}
                   </span>
                 </div>
 
                 <div className="flex items-start">
-                  <span className="w-32 font-semibold text-gray-700">Payment ID:</span>
+                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Payment ID:</span>
                   <span className="text-gray-600">{order.payment_id}</span>
                 </div>
 
                 <div className="flex items-start">
-                  <span className="w-32 font-semibold text-gray-700">Date:</span>
+                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Date:</span>
                   <span className="text-gray-600">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </span>
                 </div>
 
                 <div className="flex items-start">
-                  <span className="w-32 font-semibold text-gray-700">Items:</span>
+                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Items:</span>
                   <span className="text-gray-600">{order.items?.length ?? 0}</span>
                 </div>
 
                 <div className="flex items-start">
-                  <span className="w-32 font-semibold text-gray-700">Total:</span>
+                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Total:</span>
                   <span className="text-gray-600 font-bold text-lg">₹{order.total ?? 0}</span>
                 </div>
 
                 <div className="flex items-start md:col-span-2">
-                  <span className="w-32 font-semibold text-gray-700">Status:</span>
+                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Status:</span>
                   <span className="text-green-600 font-medium">Success</span>
                 </div>
               </div>

@@ -2,6 +2,7 @@ const express=require("express");
 const dotenv=require("dotenv");
 const cors=require("cors")
 const app=express();
+dotenv.config();
 const customer_route=require("./src/routes/customer_route")
 const product_route=require("./src/routes/product_route")
 const cart_route=require("./src/routes/cart_route")
@@ -11,7 +12,6 @@ const order_route=require("./src/routes/order_route")
 app.use(cors());
 
 app.use(express.json());
-dotenv.config();
 app.use('/api/v1/customer',customer_route);
 app.use('/api/v1/product',product_route);
 app.use('/api/v1/cart',cart_route);

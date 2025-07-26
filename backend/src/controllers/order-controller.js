@@ -102,7 +102,8 @@ exports.getAllOrder = async (req, res) => {
     const ALLorder = await Orders.find({ customer_id: user_id }).populate({
         path: "address",
         select: "firstname lastname country street city state pincode",
-      });
+      })
+      .sort({ createdAt: -1 });
     return res.status(200).json({
       success: true,
       message: "Get all order data of particular user",

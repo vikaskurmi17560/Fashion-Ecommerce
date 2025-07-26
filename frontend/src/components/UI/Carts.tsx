@@ -1,38 +1,89 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
+import useCart from '@/hook/useCart';
 
-
-export interface CartProductRef {
+interface CartProductRef {
+  _id: string;
   cover_image: string;
   name: string;
+  sale_price?: number;
+  original_price?: number;
 }
 
-export interface CartLine {
+interface CartLine {
   _id: string;
   product_id: CartProductRef;
-  total_price: number;
   quantity: number;
 }
 
-export interface CartProps {
-  carts: CartLine[] | undefined | null;
-  onRemove?: (id: string) => void;
+interface Props {
   onCheckout?: (subtotal: number) => void;
-  currency?: string; 
 }
 
-export default function Carts({
-  carts,
-  onRemove,
-  onCheckout,
-  currency = '₹',
-}: CartProps) {
-  const subtotal =
-    carts?.reduce(
-      (acc, item) => acc + (item.total_price ?? 0) * (item.quantity ?? 0),
-      0
-    ) ?? 0;
+export default function Carts({ onCheckout }: Props) {
+  const [mounted, setMounted] = useState(false);
+
+  const { carts, updateCartQuantity, deleteCart } = useCart();
+  const [localCarts, setLocalCarts] = useState<CartLine[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && carts) {
+      setLocalCarts(carts);
+      console.log('Loaded carts:', carts);
+    }
+  }, [carts, mounted]);
+
+  const subtotal = localCarts.reduce((acc, item) => {
+    const product = item.product_id as any;
+    const price =
+      typeof product.sale_price === 'number'
+        ? product.sale_price
+        : typeof product.original_price === 'number'
+        ? product.original_price
+        : 0;
+    return acc + price * item.quantity;
+  }, 0);
+
+  const handleQuantityChange = async (productId: string, change: number) => {
+    try {
+      const updated = await updateCartQuantity(productId, change);
+      if (updated) {
+        setLocalCarts((prev) =>
+          prev.map((item) =>
+            item.product_id._id === productId
+              ? { ...item, quantity: item.quantity + change }
+              : item
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Quantity update failed:', error);
+    }
+  };
+
+  const handleDelete = async (cartId: string) => {
+    try {
+      await deleteCart(cartId);
+      setLocalCarts((prev) => prev.filter((item) => item._id !== cartId));
+    } catch (error) {
+      console.error('Delete cart item failed:', error);
+    }
+  };
+
+  if (!mounted) return null;
+
+  if (localCarts.length === 0) {
+    return (
+      <div className="w-full text-center py-10 text-gray-500 font-semibold">
+        Your cart is empty.
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -50,15 +101,24 @@ export default function Carts({
           <div>Subtotal</div>
         </div>
 
-        {carts && carts.length > 0 ? (
-          carts.map((cart) => (
+        {localCarts.map((cart) => {
+          const product = cart.product_id as any;
+          const price =
+            typeof product.sale_price === 'number'
+              ? product.sale_price
+              : typeof product.original_price === 'number'
+              ? product.original_price
+              : 0;
+          const itemSubtotal = price * cart.quantity;
+
+          return (
             <div
               key={cart._id}
               className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 items-center text-center text-sm md:text-base py-4 px-2 border-b border-slate-200 bg-slate-50"
             >
               <button
                 type="button"
-                onClick={() => onRemove?.(cart._id)}
+                onClick={() => handleDelete(cart._id)}
                 className="cursor-pointer text-red-500 mx-auto"
                 aria-label="Remove item"
               >
@@ -66,31 +126,43 @@ export default function Carts({
               </button>
 
               <img
-                src={cart.product_id.cover_image}
-                alt={cart.product_id.name || 'Product'}
+                src={product.cover_image}
+                alt={product.name || 'Product'}
                 className="w-20 h-20 object-contain mx-auto rounded-md"
               />
 
-              <div className="hidden sm:block">{cart.product_id.name}</div>
+              <div className="hidden sm:block">{product.name}</div>
 
               <div className="hidden lg:block text-slate-600">
-                {currency}
-                {cart.total_price?.toFixed(2)}
+                ₹{price.toFixed(2)}
               </div>
 
-              <div>{cart.quantity}</div>
+              <div className="flex items-center justify-center gap-2 mx-auto">
+                <button
+                  type="button"
+                  onClick={() => handleQuantityChange(product._id, -1)}
+                  className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50"
+                  disabled={cart.quantity <= 1}
+                >
+                  -
+                </button>
 
-              <div className="text-slate-600">
-                {currency}
-                {(cart.total_price * cart.quantity).toFixed(2)}
+                <span className="w-6 text-center">{cart.quantity}</span>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuantityChange(product._id, 1)}
+                  className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50"
+                  disabled={cart.quantity >= 5}
+                >
+                  +
+                </button>
               </div>
+
+              <div className="text-slate-600">₹{itemSubtotal.toFixed(2)}</div>
             </div>
-          ))
-        ) : (
-          <div className="text-center py-10 text-slate-500 font-semibold">
-            Your cart is empty.
-          </div>
-        )}
+          );
+        })}
       </div>
 
       <div className="w-full max-w-7xl px-4 pb-10 mx-auto mt-8 text-black">
@@ -101,18 +173,13 @@ export default function Carts({
             </h2>
             <div className="flex justify-between text-lg border p-2 rounded-md">
               <span className="font-semibold">Subtotal</span>
-              <span className="text-slate-600">
-                {currency}
-                {subtotal.toFixed(2)}
-              </span>
+              <span className="text-slate-600">₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-lg border p-2 rounded-md">
               <span className="font-semibold">Total</span>
-              <span className="text-slate-600">
-                {currency}
-                {subtotal.toFixed(2)}
-              </span>
+              <span className="text-slate-600">₹{subtotal.toFixed(2)}</span>
             </div>
+
             {onCheckout && (
               <button
                 onClick={() => onCheckout(subtotal)}
