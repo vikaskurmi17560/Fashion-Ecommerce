@@ -116,7 +116,6 @@ exports.login = async (req, res) => {
             message: "Login successful"
         });
     } catch (err) {
-        console.log(err);
         return res.status(500).json({
             success: false,
             message: "Server error"
@@ -150,7 +149,6 @@ exports.forgetPassword = async (req, res) => {
             resetUrl,
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             success: false,
             message: "error",
@@ -183,7 +181,6 @@ exports.resetPassword = async (req, res) => {
             message: "Reset Password Successfully",
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             success: false,
             message: "error",

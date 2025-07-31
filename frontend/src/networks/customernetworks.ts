@@ -22,7 +22,6 @@ export async function SignUp(formData: FormData) {
 export async function LogIn(formdata: any) {
     try {
         const response = await axios.post(LoginUrl, formdata);
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error(error);
@@ -33,7 +32,6 @@ export async function LogIn(formdata: any) {
 export async function Forgot(formdata: any) {
     try {
         const response = await axios.post(ForgotUrl, formdata);
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error(error);
@@ -47,7 +45,6 @@ export async function Reset(formdata: any) {
             `${ResetUrl}?token=${formdata.token}`,
             formdata
         );
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error(error);

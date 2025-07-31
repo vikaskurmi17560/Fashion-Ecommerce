@@ -21,7 +21,6 @@ export default function Orderdetails({ orderId, onClose }: OrderDetailsProps) {
       setError(null);
       try {
         const response = await GetOrders(orderId);
-        console.log('Fetched Order:', response);
         if (response.success) {
           setOrder(response.data);
         } else {

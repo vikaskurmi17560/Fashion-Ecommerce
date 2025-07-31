@@ -97,7 +97,7 @@ const typedCarts: CartItem[] = carts || [];
     if (!selectedPayment) return toast.error('Please select a payment method');
 
     try {
-      await handleCheckout(subtotal * 100, router, selectedAddressId, carts);
+      await handleCheckout(subtotal * 100, router, selectedAddressId,carts);
     } catch (err) {
       toast.error('Payment failed. Try again.');
     }

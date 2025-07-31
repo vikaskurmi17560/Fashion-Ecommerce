@@ -4,7 +4,6 @@ import { AddressAddUrl, AddressGetUrl, DeleteAddressUrl } from "@/constants";
 export async function AddAddress(body: any) {
     try {
         const response = await axios.post(`${AddressAddUrl}`, body);
-        console.log("address", response)
         return response.data
     }
     catch (error) {

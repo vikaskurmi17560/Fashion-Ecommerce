@@ -16,7 +16,6 @@ function useCart() {
         setCarts(response.data);
       }
     } catch (error) {
-      console.log('Error fetching carts:');
       return ;
     }
   }

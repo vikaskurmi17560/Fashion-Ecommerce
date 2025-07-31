@@ -8,8 +8,6 @@ exports.createProduct = async (req, res) => {
   const newProduct={ name, original_price, sale_price,brief_description,shipping_charge,stock,description,features,average_rating,colors,sizes,category };
   try {
     
-    console.log(req.files);
-    
     if(req.files){
       
       if(req.files.cover_image){
@@ -100,8 +98,6 @@ exports.update_products= async (req,res)=>{
         message:"product_id not here",
       })
     }
-
-    console.log("req.file hai ye",req.files);
    
     const  updateObject={};
     if(name){
@@ -190,7 +186,7 @@ exports.delete_product= async (req,res) => {
           }); 
   }
   try{
-    const Product=Products.findByIdAndDelete(Product_id);
+    const Product=Products.findByIdAndDelete(product_id);
     if(!Product){
       return res.status(404).json({
                 success: false,

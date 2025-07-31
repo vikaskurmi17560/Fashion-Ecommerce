@@ -23,7 +23,6 @@ exports.cartCreate = async (req, res) => {
         });
     }
     catch (error) {
-        console.log("create cart error:", error);
         return res.status(500).json({
             success: false,
             message: error.message,

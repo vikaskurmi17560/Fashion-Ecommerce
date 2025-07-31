@@ -43,12 +43,11 @@ export async function handleCheckout(amount: number, router: any, selectedAddres
         handler: async function (response: any) {
           response.customer = customer;
           const res = await axios.post(`${verifyPaymentUrl}`, response);
-          console.log("carts here------>", carts);
           if (res.data.success) {
             const items = carts.map((cart: any) => ({
               product_id: cart.product_id._id,
               quantity: cart.quantity,
-              price: cart.total_price / cart.quantity,
+              price: cart.total_price,
               size:cart.size
             }));
 

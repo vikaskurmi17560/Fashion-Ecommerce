@@ -58,7 +58,6 @@ export default function Page() {
 
   useEffect(() => {
     if (!userId) {
-      console.log('User id null');
       return;
     }
 

@@ -34,7 +34,6 @@ export default function Carts({ onCheckout }: Props) {
   useEffect(() => {
     if (mounted && carts) {
       setLocalCarts(carts);
-      console.log('Loaded carts:', carts);
     }
   }, [carts, mounted]);
 

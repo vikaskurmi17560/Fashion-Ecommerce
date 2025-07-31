@@ -27,10 +27,8 @@ exports.WelcomeEmail = async (email) => {
 
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully:", info.response);
         return { success: true, info };
     } catch (error) {
-        console.error("Error sending email:", error);
         return { success: false, error };
     }
 };

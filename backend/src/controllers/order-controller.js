@@ -3,8 +3,6 @@ const Customer = require("../models/customer");
 const mongoose = require('mongoose');
 
 exports.createOrder = async (req, res) => {
-  console.log("Order payload received:", req.body);
-
   const {
     customer_id,
     payment_id,

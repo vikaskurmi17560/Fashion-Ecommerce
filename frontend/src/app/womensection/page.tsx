@@ -10,8 +10,8 @@ import Navbar from '@/components/UI/Navbar';
 import useCart from '@/hook/useCart';
 
 function Page() {
-  const { AddCart} = useCart();
-  const {products, setItem } = useProduct();
+  const { AddCart } = useCart();
+  const { products, setItem } = useProduct();
   const router = useRouter();
 
   const filteredProducts = products.filter(item => item.category === 'Women');
@@ -19,11 +19,10 @@ function Page() {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col lg:flex-row min-h-screen  bg-white  bg-slate-100 w-full ">
-
+      <div className="flex flex-col lg:flex-row min-h-screen bg-slate-100 w-full">
         <Filter />
 
-        <main className="w-full px-4 py-6 md:px-6 lg:px-10  min-h-screen bg-white">
+        <main className="w-full px-4 py-6 md:px-6 lg:px-10 min-h-screen bg-white">
           <div className="text-gray-400 font-semibold text-lg sm:text-xl mb-4">
             <Link href="/">Home</Link> / Women
           </div>
@@ -34,44 +33,68 @@ function Page() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map((product: any, index: number) => (
                 <div
-                  className="flex flex-col rounded-lg border border-slate-300 p-4 gap-3 shadow hover:shadow-md transition duration-200"
                   key={index}
+                  className="flex flex-col justify-between rounded-xl border border-slate-300 p-4 shadow-sm hover:shadow-lg transition duration-200 bg-white h-[430px]"
                 >
-                  <img
-                    src={product.cover_image}
-                    alt={product.name}
-                    className="h-48 w-full object-contain cursor-pointer"
+
+                  <div
+                    className="w-full h-[140px] flex items-center justify-center cursor-pointer"
                     onClick={() => {
                       setItem(product);
                       router.push(`/product?product_id=${product._id}`);
                     }}
-                  />
-
-                  <div className="text-base sm:text-lg font-bold text-slate-700">{product.name}</div>
-                  <div className="text-slate-500 text-sm sm:text-base">{product.category}</div>
-                  <div className="text-base sm:text-lg font-semibold text-black">
-                    $ {product.sale_price}
+                  >
+                    <img
+                      src={product.cover_image}
+                      alt={product.name}
+                      className="max-h-full object-contain transition-transform duration-200 hover:scale-105"
+                    />
                   </div>
 
-                  <div className="flex gap-2">
-                    {product.colors?.map((color: string, i: number) => (
-                      <div
-                        key={i}
-                        className="h-4 w-4 rounded-full border"
-                        style={{ backgroundColor: color }}
-                      ></div>
-                    ))}
+                  <div className="flex flex-col gap-1 mt-3">
+
+                    <div className="text-base sm:text-lg font-bold text-slate-700 truncate">
+                      {product.name}
+                    </div>
+
+                    <div className="text-slate-500 text-sm sm:text-base truncate">
+                      {product.category}
+                    </div>
+
+
+                    <div className="text-base sm:text-lg font-semibold text-black">
+                      $ {product.sale_price}
+                    </div>
+
+                    <div className="flex gap-2 mt-1">
+                      {product.colors?.map((color: string, i: number) => (
+                        <div
+                          key={i}
+                          className="h-4 w-4 rounded-full border"
+                          style={{ backgroundColor: color }}
+                        ></div>
+                      ))}
+                    </div>
+
+
+                    <div className="flex items-center gap-1 text-yellow-500 mt-1">
+                      {[...Array(Math.floor(product.average_rating || 0))].map((_, i) => (
+                        <StarIcon key={i} fontSize="small" />
+                      ))}
+                      {(product.average_rating || 0) % 1 !== 0 && <StarHalfIcon fontSize="small" />}
+                    </div>
+
+
+                    {product.brief_description && (
+                      <div className="text-sm text-gray-500 line-clamp-2 mt-1">
+                        {product.brief_description}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-1 text-yellow-500">
-                    {[...Array(Math.floor(product.average_rating || 0))].map((_, i) => (
-                      <StarIcon key={i} />
-                    ))}
-                    {(product.average_rating || 0) % 1 !== 0 && <StarHalfIcon />}
-                  </div>
 
                   <button
-                    className="w-full py-2 mt-2 bg-blue-600 text-white text-sm sm:text-base font-semibold hover:bg-black transition rounded-md"
+                    className="w-full py-2 mt-4 bg-blue-600 text-white text-sm sm:text-base font-semibold hover:bg-black transition rounded-md"
                     onClick={() => AddCart(product)}
                   >
                     ADD TO CART
