@@ -1,34 +1,80 @@
-import React from 'react'
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useProductStore } from '@/service/productstore';
 
-function filters() {
+function Filters() {
+  const [localPrice, setLocalPrice] = useState(2000);
+  const [localCategory, setLocalCategory] = useState('All');
+  const [localSearch, setLocalSearch] = useState('');
+
+  const categories = ['All', 'Accessories', 'Men', 'Women'];
+
+  const setFilterByPrice = useProductStore(state => state.setFilterByPrice);
+  const setFilterByCategory = useProductStore(state => state.setFilterByCategory);
+  const setSearchTerm = useProductStore(state => state.setSearchTerm);
+
+  useEffect(() => {
+    setFilterByPrice(localPrice);
+  }, [localPrice, setFilterByPrice]);
+
+  useEffect(() => {
+    setFilterByCategory(localCategory);
+  }, [localCategory, setFilterByCategory]);
+
+ 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearchTerm(localSearch);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [localSearch, setSearchTerm]);
+
   return (
-    <main className='flex flex-1 flex-col bg-slate-100 w-[50vh] h-screen m-4'>
-      <div className="flex flex-row items-center gap-2">
-        <input type="text" placeholder='Search Products' className='text-black border text-center text-2xl px-5 py-4' />
-        <h1 className='text-white font-bold text-center text-7xl bg-blue-500 h-16 w-16'>&gt;</h1>
-      </div>
-      <div className="">
-        <h1 className='text-black text-3xl my-8'>Filter by Price</h1>
-        <input type="range" maxLength={100} minLength={20} className='w-[90%] text-black mx-4' />
-        <div className="flex flex-row justify-between my-5">
-          <button className='bg-blue-500 w-[30%] text-xl text-white'>Filter</button>
-          <h1 className='text-black text-xl '>Price: $110 — $290</h1>
+    <aside className="bg-slate-100 w-full md:w-80 max-h-screen overflow-y-auto p-4 shadow-md">
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">Filter by Price</h2>
+        <input
+          type="range"
+          min={300}
+          max={2000}
+          value={localPrice}
+          onChange={(e) => setLocalPrice(Number(e.target.value))}
+          className="w-full"
+        />
+        <div className="flex justify-between mt-4 text-gray-700">
+          <span>Price: ₹300 – ₹{localPrice}</span>
         </div>
       </div>
-      <div className="flex flex-col gap-2 mb-12">
-        <h1 className='w-full text-3xl text-black my-6'>Categories</h1>
 
-        <div className='flex flex-row justify-between w-full text-xl'>Accessories <h2>(7)</h2></div>
-        <div className='flex flex-row justify-between w-full text-xl'>Men <h2>(12)</h2></div>
-        <div className='flex flex-row justify-between w-full text-xl'>Women <h2>(7)</h2></div>
-
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">Categories</h2>
+        <ul className="space-y-3 text-gray-700">
+          {categories.map(cat => (
+            <li
+              key={cat}
+              onClick={() => setLocalCategory(cat)}
+              className={`cursor-pointer px-2 py-1 rounded-md hover:bg-blue-100 ${
+                localCategory === cat ? 'bg-blue-200 font-medium' : ''
+              }`}
+            >
+              {cat}
+            </li>
+          ))}
+        </ul>
       </div>
-      <div className="">
-        <h1 className='text-3xl w-full text-black'>Our Best Sellers</h1>
 
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold mb-4">Search</h2>
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={localSearch}
+          onChange={(e) => setLocalSearch(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+        />
       </div>
-    </main>
-  )
+    </aside>
+  );
 }
 
-export default filters
+export default Filters;

@@ -6,12 +6,14 @@ import Footer from '@/components/UI/Footer'
 function page() {
   
   return (
-    <div>
+  
+     <div className='flex flex-col gap-4'>
       <Home />
       <HeroSection />
       <FeatureSection />
       <Footer />
       </div>
+
   )
 }
 

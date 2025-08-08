@@ -4,17 +4,25 @@ import React from 'react'
 import Filters from '@/components/productpage/filters'
 import AllProducts from '@/components/productpage/allProducts'
 import Footer from '@/components/UI/Footer'
-function page() {
+
+function Page() {
   return (
-    <main className=''>
-        <Navbar />
-        <div className="py-16 bg-slate-100 w-full flex lg:flex-row flex-col ">
-            <Filters />
-            <AllProducts />
+    <main className="min-h-screen flex flex-col">
+      <Navbar />
+
+      <div className="flex flex-col lg:flex-row bg-slate-100 py-6 px-4 gap-6">
+
+        <div className="lg:w-1/4 w-full">
+          <Filters />
         </div>
-        <Footer />
+        <div className="lg:flex-1 w-full">
+          <AllProducts />
+        </div>
+      </div>
+
+      <Footer />
     </main>
-  )
+  );
 }
 
-export default page
+export default Page;

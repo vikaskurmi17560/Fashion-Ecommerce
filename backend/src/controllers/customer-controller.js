@@ -85,43 +85,72 @@ exports.signup = async (req, res) => {
           message: "Server error" 
         });
   }
-};
-
+}; 
 
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const customerExists = await Customers.findOne({ email });
-        if (!customerExists) {
-            return res.status(400).json({
-                success: false,
-                message: "User does not exist"
-            });
-        }
-        const isPasswordMatched = await bcrypt.compare(password, customerExists.password);
-        if (!isPasswordMatched) {
-            return res.status(400).json({
-                success: false,
-                message: "Password does not match"
-            });
-        }
-        const payload = { email: customerExists.email, name: customerExists.name, _id: customerExists._id };
-        const token = jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: process.env.JWT_EXPIRES
-        });
-        return res.status(200).json({
-            success: true,
-            token,
-            user: customerExists,
-            message: "Login successful"
-        });
-    } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
+  const { email, password } = req.body;
+
+  try {
+    const customer = await Customers.findOne({ email });
+    if (!customer) {
+      return res.status(400).json({
+        success: false,
+        message: "User does not exist",
+      });
     }
+
+    const isPasswordMatched = await bcrypt.compare(password, customer.password);
+    if (!isPasswordMatched) {
+      return res.status(400).json({
+        success: false,
+        message: "Password does not match",
+      });
+    }
+
+    const payload = {
+      _id: customer._id,
+      email: customer.email,
+      name: customer.name,
+      phone: customer.phone_no,
+      image: customer.image
+    };
+
+    
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES || "1d",
+    });
+
+   
+    res.cookie('auth_token', token, {
+  httpOnly: true,     
+  secure: true,    
+  sameSite: 'None',  
+  maxAge: 24 * 60 * 60 * 1000,
+});
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      customer,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
 };
+
+exports.logout = (req, res) => {
+  res.clearCookie("auth_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+  });
+  return res.status(200).json({ success: true, message: "Logged out successfully" });
+};
+
 
 exports.forgetPassword = async (req, res) => {
     try {

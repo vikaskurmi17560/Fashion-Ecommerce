@@ -37,7 +37,7 @@ function Page() {
   return (
     <main className="w-full h-auto">
       
-      <header className="flex flex-col items-center justify-center bg-[url('https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2019/12/banner-06.jpg')] bg-cover bg-center w-full h-[85vh]">
+      <header className="flex flex-col items-center justify-center bg-[url('https://res.cloudinary.com/dplwgsngu/image/upload/v1754551223/banner-06_zt8kwl.jpg')] bg-cover bg-center w-full h-[85vh]">
         <Navbar />
         <div className="w-[90%] flex items-center justify-center text-center h-full">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white">

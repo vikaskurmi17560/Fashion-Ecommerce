@@ -12,6 +12,7 @@ import useCart from '@/hook/useCart';
 import toast from 'react-hot-toast';
 import Carts from '@/components/UI/Carts';
 
+
 interface AddressType {
   _id: string;
   customer_id: string;
@@ -39,7 +40,6 @@ function CheckoutPage() {
   const { carts } = useCart();
   const router = useRouter();
 
-  
 const typedCarts: CartItem[] = carts || [];
 
   const subtotal = typedCarts.reduce(
@@ -64,7 +64,7 @@ const typedCarts: CartItem[] = carts || [];
         router.replace('/login');
       }
     }
-  }, []);
+  }, [addresses]);
 
   const getAddress = async (id: string) => {
     try {

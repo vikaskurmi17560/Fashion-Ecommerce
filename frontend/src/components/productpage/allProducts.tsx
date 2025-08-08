@@ -1,36 +1,63 @@
 'use client';
-
-import Link from 'next/link';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
-import useProduct from '@/hook/useProduct';
-import { useRouter } from 'next/navigation';
 import useCart from '@/hook/useCart';
+import { useProductStore } from '@/service/productstore';
 
 function AllProducts() {
-  const { products, setItem } = useProduct();
   const { AddCart } = useCart();
   const router = useRouter();
 
+  const {
+    products,
+    currentPage,
+    totalPages,
+    loading,
+    fetchProducts,
+    setCurrentPage,
+    filterByCategory,
+    filterByPrice,
+    searchTerm,
+  } = useProductStore();
+
+
+  useEffect(() => {
+    fetchProducts(currentPage);
+  }, [currentPage, filterByCategory, filterByPrice, searchTerm]);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  if (loading) return <div className="p-4 text-center">Loading products...</div>;
+
   return (
-    <main className="w-full min-h-screen bg-white px-4 py-8 md:px-10 lg:px-20">
-      <div className="text-gray-400 font-semibold text-lg sm:text-xl mb-4">
-        <Link href="/">Home</Link> / Store
+    <main className="w-fit h-fit bg-white px-4 md:px-4 lg:px-10 flex flex-col gap-2">
+      <div className="text-gray-400 font-semibold my-2 text-lg sm:text-xl">
+        Home / {filterByCategory}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product: any, index: number) => (
+      <div className="lg:h-[110vh] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {products.map(product => (
           <div
-            key={index}
-            className="flex flex-col justify-between rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-lg transition duration-200 bg-white h-[430px]"
+            key={product._id}
+            className="flex flex-col justify-between rounded-2xl border border-slate-200 p-2 shadow-sm hover:shadow-lg transition duration-200 bg-white h-[430px]"
           >
-
             <div
               className="w-full h-[140px] flex items-center justify-center cursor-pointer"
-              onClick={() => {
-                setItem(product);
-                router.push(`/product?product_id=${product._id}`);
-              }}
+              onClick={() => router.push(`/product?product_id=${product._id}`)}
             >
               <img
                 src={product.cover_image}
@@ -40,46 +67,26 @@ function AllProducts() {
             </div>
 
             <div className="flex flex-col gap-1 mt-3">
-
-              <div className="text-base sm:text-lg font-bold text-slate-700 truncate">
-                {product.name}
-              </div>
-
-              <div className="text-slate-500 text-sm sm:text-base truncate">
-                {product.category}
-              </div>
-
-
-              <div className="text-base sm:text-lg font-semibold text-black">
-                ₹ {product.sale_price}
-              </div>
-
-
+              <div className="text-base sm:text-lg font-bold text-slate-700 truncate">{product.name}</div>
+              <div className="text-slate-500 text-sm sm:text-base truncate">{product.category}</div>
+              <div className="text-base sm:text-lg font-semibold text-black">₹ {product.sale_price}</div>
               <div className="flex gap-2 mt-1">
-                {product.colors.map((color: string, index: number) => (
+                {product.colors.map((color, idx) => (
                   <div
-                    key={index}
+                    key={idx}
                     className="h-4 w-4 rounded-full border"
                     style={{ backgroundColor: color }}
-                  ></div>
+                  />
                 ))}
               </div>
-
-
               <div className="flex items-center gap-1 text-yellow-500 mt-1">
-                {[...Array(Math.floor(product.average_rating))].map((_, index) => (
-                  <StarIcon key={`star-${index}`} fontSize="small" />
+                {[...Array(Math.floor(product.average_rating))].map((_, idx) => (
+                  <StarIcon key={idx} fontSize="small" />
                 ))}
-                {product.average_rating % 1 !== 0 && (
-                  <StarHalfIcon fontSize="small" />
-                )}
+                {product.average_rating % 1 !== 0 && <StarHalfIcon fontSize="small" />}
               </div>
-
-
               {product.brief_description && (
-                <div className="text-sm text-gray-500 line-clamp-2 mt-1">
-                  {product.brief_description}
-                </div>
+                <div className="text-sm text-gray-500 line-clamp-2 mt-1">{product.brief_description}</div>
               )}
             </div>
 
@@ -91,6 +98,28 @@ function AllProducts() {
             </button>
           </div>
         ))}
+      </div>
+
+      <div className="w-full flex justify-between gap-4 text-sm font-semibold text-white px-5 py-2">
+        <button
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+          disabled={currentPage === 1}
+          onClick={handlePrevPage}
+        >
+          Prev
+        </button>
+
+        <button className="border-black border-2 p-3 bg-blue-500 rounded-md">
+          {currentPage} / {totalPages}
+        </button>
+
+        <button
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+          disabled={currentPage === totalPages}
+          onClick={handleNextPage}
+        >
+          Next
+        </button>
       </div>
     </main>
   );

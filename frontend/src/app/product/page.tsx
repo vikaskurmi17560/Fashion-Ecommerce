@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Footer from '@/components/UI/Footer';
 import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { GetProduct } from '@/networks/productnetworks';
 import Link from 'next/link';
 import useCart from '@/hook/useCart';
@@ -16,7 +16,7 @@ function Page() {
     const [selectedRating, setSelectedRating] = useState<number>(0);
     const [hoveredRating, setHoveredRating] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-
+    const router = useRouter();
     const params = useSearchParams();
     const id = params.get("product_id");
 
@@ -99,11 +99,15 @@ function Page() {
             <section className="max-w-7xl mx-auto px-4 py-12">
                 <div className="flex flex-col h-fit lg:flex-row gap-10">
 
-                    <div className="w-full lg:w-1/2 h-[85vh] flex items-center justify-center">
+                    <div className=" lg:w-1/2 lg:h-[85vh] flex items-center justify-center">
                         <img
                             src={item.cover_image}
                             alt={item.name}
-                            className="max-h-full max-w-full object-contain rounded-xl shadow-lg"
+                            className="max-h-full max-w-full object-contain rounded-xl shadow-lg cursor-pointer"
+                            onClick={() => {
+                                const imagesJSON = encodeURIComponent(JSON.stringify(item.images));
+                                router.push(`/productviewer?images=${imagesJSON}`);
+                            }}
                         />
                     </div>
 
@@ -113,7 +117,7 @@ function Page() {
                                 Home
                             </Link>{' '}
                             /{' '}
-                            <Link href="#" className="hover:underline">
+                            <Link href={`/products?category=${item.category}`} className="hover:underline">
                                 {item.category}
                             </Link>{' '}
                             / <span>{item.name}</span>

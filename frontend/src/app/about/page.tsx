@@ -12,37 +12,37 @@ import FitbitIcon from '@mui/icons-material/Fitbit';
 const Teams = [
   {
     id: 1,
-    photo: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2018/12/team2-free-img.png",
+    photo: "https://res.cloudinary.com/dplwgsngu/image/upload/v1754551295/team2-free-img_mrf1vm.png",
     name: "Harvey Spector",
     Role: "Founder - CEO"
   },
   {
     id: 6,
-    photo: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2018/12/team1-free-img.png",
+    photo: "https://res.cloudinary.com/dplwgsngu/image/upload/v1754551317/team1-free-img_gnrzpd.png",
     name: "Jessica Pearson",
     Role: "COO"
   },
   {
     id: 2,
-    photo: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2018/12/team3-free-img.png",
+    photo: "https://res.cloudinary.com/dplwgsngu/image/upload/v1754551344/team3-free-img_bgx5er.png",
     name: "Rachel Zain",
     Role: "Marketing Head"
   },
   {
     id: 3,
-    photo: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2018/12/team4free-img.png",
+    photo: "https://res.cloudinary.com/dplwgsngu/image/upload/v1754551364/team4free-img_cncbf6.png",
     name: "Luise Litt",
     Role: "Lead Developer"
   },
   {
     id: 4,
-    photo: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2018/12/team5-free-img.png",
+    photo: "https://res.cloudinary.com/dplwgsngu/image/upload/v1754551388/team5-free-img_hkb00b.png",
     name: "Katrina Bennett",
     Role: "Intern Designer"
   },
   {
     id: 5,
-    photo: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2018/12/team6-free-img.png",
+    photo: "https://res.cloudinary.com/dplwgsngu/image/upload/v1754551415/team6-free-img_ci5jnq.png",
     name: "Mike Ross",
     Role: "Intern Designer"
   }
@@ -51,7 +51,7 @@ const Teams = [
 function Page() {
   return (
     <div className="text-black w-full flex flex-col">
-      <div className='w-full bg-fixed h-[75vh] bg-[url("https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2021/05/banner-04.jpg")] bg-no-repeat bg-cover'>
+      <div className='w-full bg-fixed h-[75vh] bg-[url("https://res.cloudinary.com/dplwgsngu/image/upload/v1754551116/banner-04_pls8eu.jpg")] bg-no-repeat bg-cover'>
         <Navbar />
         <h1 className='text-center text-white text-5xl sm:text-6xl md:text-7xl font-extrabold mt-44 sm:mt-52 md:mt-56'>About Us</h1>
       </div>
@@ -64,7 +64,7 @@ function Page() {
               Lorem ipsum, dolor sit amet consectetur adipisicing elit. Delectus harum, temporibus, neque sunt nobis quas nisi iusto quia distinctio ipsa impedit adipisci tempora aperiam maxime totam ea repudiandae eum nostrum ducimus esse, doloribus inventore. Laborum ullam soluta dignissimos obcaecati, non nobis ratione explicabo ducimus deleniti?
             </p>
           </div>
-          <img src="https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2018/12/slide-image-free-img.jpg" alt="About" className="w-full md:w-1/2 h-[300px] sm:h-[400px] object-cover rounded-md" />
+          <img src="https://res.cloudinary.com/dplwgsngu/image/upload/v1754551140/slide-image-free-img_s8isqy.jpg" alt="About" className="w-full md:w-1/2 h-[300px] sm:h-[400px] object-cover rounded-md" />
         </div>
       </div>
 
@@ -91,7 +91,7 @@ function Page() {
         </div>
       </div>
 
-      <div className='w-full h-auto py-16 bg-fixed bg-[url("https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2019/12/banner-05.jpg")] bg-cover bg-center flex justify-center'>
+      <div className='w-full h-auto py-16 bg-fixed bg-[url("https://res.cloudinary.com/dplwgsngu/image/upload/v1754551168/banner-05_ahzzhj.jpg")] bg-cover bg-center flex justify-center'>
         <div className="bg-slate-100 bg-opacity-90 p-8 sm:p-12 w-[90%] md:w-[50%] flex flex-col items-center gap-6 rounded-lg shadow-md">
           <div className="bg-blue-700 w-16 h-1 mb-2" />
           <h2 className="text-3xl sm:text-5xl font-bold text-center">Follow Us</h2>
