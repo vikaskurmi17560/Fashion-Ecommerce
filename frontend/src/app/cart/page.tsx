@@ -7,14 +7,8 @@ import useCart from '@/hook/useCart';
 import { useRouter } from 'next/navigation';
 
 export default function AccountPage() {
-    const { carts} = useCart();
+    const { carts } = useCart();
     const router = useRouter();
-
-    const subtotal =
-        carts?.reduce(
-            (acc: number, item: any) => acc + item.total_price * item.quantity,
-            0
-        ) || 0;
 
     return (
         <main className="flex flex-col min-h-screen justify-between bg-slate-100 text-black">
@@ -24,12 +18,9 @@ export default function AccountPage() {
 
                 <Cart
                     onCheckout={() => {
-                        localStorage.setItem('checkout_subtotal', subtotal.toString());
                         router.push('/checkout');
                     }}
                 />
-
-
             </section>
 
             <Footer />

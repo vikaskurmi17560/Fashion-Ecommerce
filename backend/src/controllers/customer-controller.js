@@ -107,13 +107,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    const payload = {
-      _id: customer._id,
-      email: customer.email,
-      name: customer.name,
-      phone: customer.phone_no,
-      image: customer.image
-    };
+  const payload = { _id: customer._id };
 
     
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -244,4 +238,11 @@ exports.getuserdata = async (req, res) => {
             message: "error",
         });
     }
+};
+
+exports.checkAuth = (req, res) => {
+  res.status(200).json({
+    success: true,
+    user: req.user,
+  });
 };

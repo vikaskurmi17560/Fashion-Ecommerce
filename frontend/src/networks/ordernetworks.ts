@@ -28,13 +28,12 @@ export async function GetOrders(order_id:string){
 }
 
 
-export async function GetALLOrders(){
-    const id=localStorage.getItem("eco_user_id");
-    try{
-        const response= await axios.get(`${GetALLOrderUrl}?user_id=${id}`);
-        return response.data;
-    }catch(error){
-        toast.error("Something went wrong here try again !!");
-        throw error;
-    }
+export async function GetALLOrders(user_id: string) {
+  try {
+    const response = await axios.get(`${GetALLOrderUrl}?user_id=${user_id}`);
+    return response.data;
+  } catch (error) {
+    toast.error("Something went wrong here, try again!!");
+    throw error;
+  }
 }

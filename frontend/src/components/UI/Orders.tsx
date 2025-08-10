@@ -2,28 +2,47 @@
 import { GetALLOrders } from '@/networks/ordernetworks';
 import React, { useEffect, useState } from 'react';
 import OrderDetails from './Orderdetails';
+import useAuth from '@/hook/useAuth';
+
+interface User {
+  _id: string;
+}
 
 function Orders() {
   const [orderData, setOrderData] = useState<any>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const { user } = useAuth() as { user: User | null };
 
   async function fetchdata() {
+    if (!user) return;
+
     try {
-      const orders = await GetALLOrders();
+      const orders = await GetALLOrders(user._id);
       if (orders.success) {
         setOrderData(orders.ALLorder);
+      } else {
+        setOrderData([]);
       }
     } catch (error) {
-      console.error('orders fetch error:', error);
+      console.error('Orders fetch error:', error);
+      setOrderData([]);
     }
   }
 
   useEffect(() => {
     fetchdata();
-  }, []);
+  }, [user]);
+
+  if (!user) {
+    return (
+      <p className="text-center p-4 text-gray-600 font-semibold">
+        Please log in to see your orders.
+      </p>
+    );
+  }
 
   return (
-    <div className="bg-white text-gray-800 p-6 rounded-lg shadow-md">
+    <div className="bg-white text-gray-800 p-6 rounded-lg shadow-md min-h-[200px]">
       {selectedOrderId ? (
         <OrderDetails orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} />
       ) : orderData && orderData.length > 0 ? (
@@ -41,26 +60,26 @@ function Orders() {
                 <div className="flex items-start">
                   <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Customer:</span>
                   <span className="text-gray-600">
-                    {order.address.firstname} {order.address.lastname}
+                    {order.customer_name ?? 'N/A'}
                   </span>
                 </div>
 
                 <div className="flex items-start">
                   <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Address:</span>
                   <span className="text-gray-600">
-                    {order.address.street}, {order.address.city}, {order.address.state} - {order.address.pincode}
+                    {order.address ?? 'N/A'}
                   </span>
                 </div>
 
                 <div className="flex items-start">
                   <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Payment ID:</span>
-                  <span className="text-gray-600">{order.payment_id}</span>
+                  <span className="text-gray-600">{order.payment_id ?? 'N/A'}</span>
                 </div>
 
                 <div className="flex items-start">
                   <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Date:</span>
                   <span className="text-gray-600">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                    {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}
                   </span>
                 </div>
 

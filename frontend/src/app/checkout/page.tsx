@@ -11,7 +11,7 @@ import { DeleteAddress, GetAddress } from '@/networks/addressnetworks';
 import useCart from '@/hook/useCart';
 import toast from 'react-hot-toast';
 import Carts from '@/components/UI/Carts';
-
+import useAuth from '@/hook/useAuth';
 
 interface AddressType {
   _id: string;
@@ -28,43 +28,37 @@ interface CartItem {
   _id: string;
   total_price: number;
   quantity: number;
- 
+}
+interface User {
+  _id: string;
 }
 
-
 function CheckoutPage() {
-  const [login, setLogin] = useState(false);
   const [addresses, setAddresses] = useState<AddressType[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [selectedPayment, setSelectedPayment] = useState('');
   const { carts } = useCart();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth() as { user: User | null; loading: boolean };
 
-const typedCarts: CartItem[] = carts || [];
+  const typedCarts: CartItem[] = carts || [];
 
   const subtotal = typedCarts.reduce(
     (acc: number, item: CartItem) => acc + item.total_price * item.quantity,
     0
   );
 
-   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('checkout_subtotal', subtotal.toString());
-    }
-  }, [subtotal]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const id = localStorage.getItem('eco_user_id');
-      if (id) {
-        setLogin(true);
-        getAddress(id);
-      } else {
-        setLogin(false);
-        router.replace('/login');
-      }
+    if (!authLoading && user) {
+      getAddress(user._id);
+      setSelectedAddressId(null);
+    } else if (!authLoading && !user) {
+
+      router.replace('/login');
     }
-  }, [addresses]);
+
+  }, [user, authLoading]);
 
   const getAddress = async (id: string) => {
     try {
@@ -72,9 +66,12 @@ const typedCarts: CartItem[] = carts || [];
       if (response.success && Array.isArray(response.data)) {
         setAddresses(response.data);
         if (response.data.length > 0) setSelectedAddressId(response.data[0]._id);
+        else setSelectedAddressId(null);
       }
     } catch (error) {
       console.error(error);
+      setAddresses([]);
+      setSelectedAddressId(null);
     }
   };
 
@@ -82,8 +79,7 @@ const typedCarts: CartItem[] = carts || [];
     try {
       await DeleteAddress(id);
       toast.success('Address removed successfully');
-      const userId = localStorage.getItem('user_id');
-      if (userId) getAddress(userId);
+      if (user) getAddress(user._id);
     } catch (err) {
       console.error(err);
       toast.error('Error deleting address');
@@ -97,11 +93,19 @@ const typedCarts: CartItem[] = carts || [];
     if (!selectedPayment) return toast.error('Please select a payment method');
 
     try {
-      await handleCheckout(subtotal * 100, router, selectedAddressId,carts);
+      await handleCheckout(subtotal * 100, router, selectedAddressId, carts);
     } catch (err) {
       toast.error('Payment failed. Try again.');
     }
   };
+
+  if (authLoading) {
+    return (
+      <main className="w-full min-h-screen flex justify-center items-center">
+        <p>Loading...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="w-full min-h-screen bg-white text-black flex flex-col items-center">
@@ -114,18 +118,26 @@ const typedCarts: CartItem[] = carts || [];
           <div className="flex items-center gap-2 border-t pt-4 text-sm text-black">
             <OpenInBrowserIcon className="text-gray-600" />
             <span className="text-gray-500">Have a coupon?</span>
-            <button type="button" className="text-blue-600 hover:underline">Click here to enter your code</button>
+            <button type="button" className="text-blue-600 hover:underline">
+              Click here to enter your code
+            </button>
           </div>
 
-          
           <section className="w-full bg-white p-4 rounded shadow text-slate-800">
             <h2 className="text-lg font-semibold mb-4">Select Delivery Address</h2>
             <div className="flex flex-col gap-4 mb-4">
               {addresses.length > 0 ? (
                 addresses.map((address) => (
-                  <div key={address._id} className="flex justify-between items-start bg-slate-50 p-3 rounded shadow">
-                    <label className="flex flex-row items-start gap-3 text-sm md:text-base cursor-pointer w-full">
+                  <div
+                    key={address._id}
+                    className="flex justify-between items-start bg-slate-50 p-3 rounded shadow"
+                  >
+                    <label
+                      className="flex flex-row items-start gap-3 text-sm md:text-base cursor-pointer w-full"
+                      htmlFor={`address-${address._id}`}
+                    >
                       <input
+                        id={`address-${address._id}`}
                         type="radio"
                         name="address"
                         value={address._id}
@@ -134,10 +146,18 @@ const typedCarts: CartItem[] = carts || [];
                         className="mt-1"
                       />
                       <p className="flex-1">
-                        <strong>{address.firstname} {address.lastname}</strong><br />
-                        {address.street}, {address.city}, {address.state} - {address.pincode}, {address.country}
+                        <strong>
+                          {address.firstname} {address.lastname}
+                        </strong>
+                        <br />
+                        {address.street}, {address.city}, {address.state} - {address.pincode},{' '}
+                        {address.country}
                       </p>
-                      <h1 onClick={() => handleDelete(address._id)} className="text-red-500 hover:text-red-700 cursor-pointer">
+                      <h1
+                        onClick={() => handleDelete(address._id)}
+                        className="text-red-500 hover:text-red-700 cursor-pointer"
+                        aria-label="Delete address"
+                      >
                         <DeleteIcon />
                       </h1>
                     </label>
@@ -149,20 +169,19 @@ const typedCarts: CartItem[] = carts || [];
             </div>
             <button
               type="button"
-              onClick={() => router.push("/form")}
+              onClick={() => router.push('/form')}
               className="bg-blue-600 hover:bg-black text-white py-2 px-4 text-sm rounded-sm font-semibold"
             >
               + Add New Address
             </button>
           </section>
 
-         
           <section className="flex flex-col lg:flex-row gap-6 text-slate-800">
             <div className="w-full bg-white border rounded shadow p-4">
               <h2 className="text-xl font-bold text-black mb-4">Your Order</h2>
 
               <div className="text-sm md:text-base border-b py-2">
-               <Carts/>
+                <Carts />
               </div>
 
               <div className="mt-6 flex flex-col gap-4 text-sm md:text-base text-slate-800">
@@ -199,8 +218,11 @@ const typedCarts: CartItem[] = carts || [];
 
                 <button
                   type="submit"
-                  className={`mt-4 ${login ? 'w-1/3 min-w-[200px] text-center border rounded shadow bg-blue-600 hover:bg-black' : 'bg-gray-400 cursor-not-allowed'} text-white font-bold py-2 px-4 rounded-sm text-lg`}
-                  disabled={!login}
+                  className={`mt-4 ${user
+                    ? 'w-1/3 min-w-[200px] text-center border rounded shadow bg-blue-600 hover:bg-black'
+                    : 'bg-gray-400 cursor-not-allowed'
+                    } text-white font-bold py-2 px-4 rounded-sm text-lg`}
+                  disabled={!user}
                 >
                   Proceed to Pay
                 </button>

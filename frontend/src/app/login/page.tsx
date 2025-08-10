@@ -23,11 +23,6 @@ function Page() {
       const response = await LogIn(data);
       if (response.success) {
         toast.success("Account Login successfully");
-        localStorage.setItem("eco_user_id", response.customer._id);
-        localStorage.setItem("eco_user_name", response.customer.name);
-        localStorage.setItem("eco_user_email", response.customer.email);
-        localStorage.setItem("eco_phone", response.customer.phone_no);
-        localStorage.setItem("eco_user_image", response.customer.profile);
         router.replace("/");
       }
     } catch (error: any) {

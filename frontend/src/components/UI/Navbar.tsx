@@ -10,6 +10,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import useCart from '@/hook/useCart';
+import useAuth from '@/hook/useAuth';
+import { getUser, logout } from '@/networks/customernetworks';
 
 interface Product {
   _id: string;
@@ -25,6 +27,10 @@ interface CartItem {
   total_price?: number;
 }
 
+interface User {
+  _id: string;
+}
+
 const navigation = ['/', '/about', '/contact', '/products'];
 const excludedPathsForCart = ['cart', 'checkout', 'profile'];
 
@@ -32,129 +38,112 @@ export default function Navbar() {
   const router = useRouter();
   const path = usePathname();
 
-  const [profileImg, setProfileImg] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
+  const { user } = useAuth() as { user: User | null };
+  const { carts, deleteCart, getCarts, updateCartQuantity } = useCart();
+
   const [seeBucket, setSeeBucket] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
+  const [loadingUserData, setLoadingUserData] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [count, setCount] = useState(0);
 
-  const { carts: backendCarts, deleteCart, getCarts, updateCartQuantity } = useCart();
-  
-  // State for local storage cart when NOT logged in
-  const [localCarts, setLocalCarts] = useState<CartItem[]>([]);
-  
-  // Check login state
-  const loggedIn = Boolean(typeof window !== 'undefined' && localStorage.getItem('eco_user_id'));
-
-  // Load user info & cart on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setName(localStorage.getItem('eco_user_name'));
-      setProfileImg(localStorage.getItem('eco_user_image'));
+    if (user) {
+      getCarts();
 
-      if (!loggedIn) {
-        // Load cart from localStorage if not logged in
-        const savedCart = localStorage.getItem('local_cart');
-        if (savedCart) {
-          try {
-            setLocalCarts(JSON.parse(savedCart));
-          } catch {
-            setLocalCarts([]);
-          }
+      const fetchUserData = async () => {
+        try {
+          const data = await getUser(user._id);
+          setUserData(data);
+        } catch (err) {
+          console.error('Failed to fetch user data:', err);
+          setUserData(null);
+        } finally {
+          setLoadingUserData(false);
         }
-      } else {
-        // Logged in: fetch cart from backend
-        getCarts();
-      }
+      };
+
+      fetchUserData();
+    } else {
+      setUserData(null);
+      setLoadingUserData(false);
     }
-  }, [loggedIn, getCarts]);
+  }, [user]);
 
-  // Use backend carts if logged in, otherwise local carts
-  const carts = loggedIn ? backendCarts ?? [] : localCarts;
+  const cartItems: CartItem[] = carts ?? [];
 
-  const handleLogout = () => {
-    localStorage.clear();
-    setName(null);
-    setProfileImg(null);
-    setLocalCarts([]);
-    router.replace('/login');
-  };
-
-  const getPrice = (item: CartItem) => {
+  const getPrice = (item: CartItem): number => {
     const price = item.total_price ?? item.product_id.price ?? 0;
     return typeof price === 'number' && !isNaN(price) ? price : 0;
   };
+  
+  useEffect(() => {
+    setCount(cartItems.length);
+  }, [cartItems]);
 
-  // For logged in users, update quantity via backend; for guests, update local storage
-  const handleQuantityChange = async (productId: string, change: number) => {
-    if (loggedIn) {
-      try {
-        const updated = await updateCartQuantity(productId, change);
-        if (updated) {
-          getCarts();
-        }
-      } catch (error) {
-        console.error('Quantity update failed:', error);
-      }
-    } else {
-      // Guest user: update local storage cart
-      const updatedLocalCarts = localCarts.map(item => {
-        if (item.product_id._id === productId) {
-          const newQty = Math.max(1, item.quantity + change);
-          return { ...item, quantity: newQty };
-        }
-        return item;
-      });
-      setLocalCarts(updatedLocalCarts);
-      localStorage.setItem('local_cart', JSON.stringify(updatedLocalCarts));
-    }
-  };
-
-  // For logged in users, delete cart item via backend; for guests, delete from local storage
-  const handleDelete = async (cartId: string) => {
-    if (loggedIn) {
-      try {
-        await deleteCart(cartId);
+  const handleQuantityChange = async (productId: string, change: number): Promise<void> => {
+    try {
+      const updated = await updateCartQuantity(productId, change);
+      if (updated) {
         getCarts();
-      } catch (error) {
-        console.error('Delete cart item failed:', error);
       }
-    } else {
-      // Guest user: remove from local cart by product _id
-      const updatedLocalCarts = localCarts.filter(item => item.product_id._id !== cartId);
-      setLocalCarts(updatedLocalCarts);
-      localStorage.setItem('local_cart', JSON.stringify(updatedLocalCarts));
+    } catch (error) {
+      console.error('Quantity update failed:', error);
     }
   };
 
-  const subtotal = carts.reduce((acc, item) => {
-    const price = getPrice(item);
-    const qty = item.quantity ?? 1;
-    return acc + price * qty;
-  }, 0);
+  const handleDelete = async (cartId: string): Promise<void> => {
+    try {
+      await deleteCart(cartId);
+      getCarts();
+    } catch (error) {
+      console.error('Delete cart item failed:', error);
+    }
+  };
 
-  const toggleBucket = () => {
+  const toggleBucket = (): void => {
     setSeeBucket((prev) => {
-      if (!prev) setShowMobileMenu(false);
-      return !prev;
+      const newState = !prev;
+      if (newState) {
+        getCarts();
+        setShowMobileMenu(false);
+      }
+      return newState;
     });
   };
 
-  const toggleMobileMenu = () => {
+  const toggleMobileMenu = (): void => {
     setShowMobileMenu((prev) => {
       if (!prev) setSeeBucket(false);
       return !prev;
     });
   };
 
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await logout();
+      router.replace('/login');
+    } catch (err) {
+      console.error('Logout failed:', err);
+      setLoggingOut(false);
+    }
+  };
+
   const canShowCart = !excludedPathsForCart.some((p) => path.includes(p));
 
   return (
-    <div className={`px-1 z-20 relative w-full ${navigation.includes(path) ? 'bg-black/10 text-white' : 'bg-white text-black'}`}>
-      {/* Desktop Navbar */}
+    <div
+      className={`px-1 z-20 relative w-full ${navigation.includes(path) ? 'bg-black/10 text-white' : 'bg-white text-black'
+        }`}
+    >
+
       <div className="hidden md:flex items-center justify-between lg:h-32 md:h-24 font-semibold lg:px-6 md:px-2 px-1">
         <div className="flex items-center lg:gap-x-20 md:gap-x-2 lg:p-3 md:p-0">
           <Link href="/" className="lg:text-4xl md:text-sm font-bold hover:text-blue-200 flex items-center gap-1">
-            <FitbitIcon /> LOGO
+            <FitbitIcon />
+            LOGO
           </Link>
           <div className="flex lg:gap-8 md:gap-2 lg:text-xl md:text-sm">
             <Link href="/products" className="hover:text-blue-200">
@@ -172,15 +161,32 @@ export default function Navbar() {
           </Link>
 
           {canShowCart && (
-            <button className="hover:text-blue-200" onClick={toggleBucket} aria-label="Toggle cart bucket">
+            <button
+              className="relative hover:text-blue-200"
+              onClick={toggleBucket}
+              aria-label="Toggle cart bucket"
+              type="button"
+            >
               <ShoppingCartIcon />
+              {count > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-600 text-white rounded-full px-1.5 text-xs font-bold min-w-[18px] text-center">
+                  {count}
+                </span>
+              )}
             </button>
           )}
 
-          {name || profileImg ? (
-            path.includes('profile') ? (
-              <button onClick={handleLogout} className="text-red-500 hover:text-red-700 font-semibold">
-                Logout
+          {user ? (
+            loadingUserData ? (
+              <div className="w-14 h-14 rounded-full bg-gray-300 animate-pulse" />
+            ) : path.includes('profile') ? (
+              <button
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="text-red-500 hover:text-red-700 font-semibold disabled:opacity-50"
+                type="button"
+              >
+                {loggingOut ? 'Logging out...' : 'Logout'}
               </button>
             ) : (
               <div
@@ -188,15 +194,16 @@ export default function Navbar() {
                 onClick={() => router.push('/profile')}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && router.push('/profile')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') router.push('/profile');
+                }}
                 aria-label="Go to profile"
               >
-                <h1>{name}</h1>
+                <h1>{userData?.name || 'User'}</h1>
                 <img
                   src={
-                    profileImg && profileImg !== 'null'
-                      ? profileImg
-                      : 'https://res.cloudinary.com/dplwgsngu/image/upload/v1732371530/uvs9ln32r2h5p3cuxeav.jpg'
+                    userData?.profile ??
+                    'https://res.cloudinary.com/dplwgsngu/image/upload/v1732371530/uvs9ln32r2h5p3cuxeav.jpg'
                   }
                   alt="profile"
                   className="rounded-full lg:h-14 lg:w-14 md:h-8 md:w-8 object-cover"
@@ -211,45 +218,70 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Navbar */}
+
       <div className="md:hidden flex items-center justify-between p-4">
         <Link href="/" className="text-2xl font-bold flex items-center gap-1">
-          <FitbitIcon /> LOGO
+          <FitbitIcon />
+          LOGO
         </Link>
         <div className="flex items-center gap-4">
           {canShowCart && (
-            <button onClick={toggleBucket} aria-label="Toggle cart bucket">
+            <button
+              className="relative"
+              onClick={toggleBucket}
+              aria-label="Toggle cart bucket"
+              type="button"
+            >
               <ShoppingCartIcon />
+              {count > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-600 text-white rounded-full px-1.5 text-xs font-bold min-w-[18px] text-center">
+                  {count}
+                </span>
+              )}
             </button>
           )}
-          <button onClick={toggleMobileMenu} aria-label="Toggle mobile menu">
+          <button onClick={toggleMobileMenu} aria-label="Toggle mobile menu" type="button">
             {showMobileMenu ? <CloseIcon /> : <MenuIcon />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+
       {showMobileMenu && (
-        <div className="md:hidden fixed inset-0 text-black bg-black/40 z-40" onClick={() => setShowMobileMenu(false)}>
+        <div
+          className="md:hidden fixed inset-0 text-black bg-black/40 z-40"
+          onClick={() => setShowMobileMenu(false)}
+          role="button"
+          tabIndex={-1}
+        >
           <div
             className="fixed top-0 right-0 w-72 h-full bg-white shadow-lg flex flex-col p-5 transition-transform duration-300"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-xl font-bold">Menu</h1>
-              <button className="p-1 rounded hover:bg-gray-100" onClick={() => setShowMobileMenu(false)} aria-label="Close menu">
+              <button
+                className="p-1 rounded hover:bg-gray-100"
+                onClick={() => setShowMobileMenu(false)}
+                aria-label="Close menu"
+                type="button"
+              >
                 ✕
               </button>
             </div>
 
             <div className="mb-6">
-              {name || profileImg ? (
-                path.includes('profile') ? (
+              {user ? (
+                loadingUserData ? (
+                  <div className="w-10 h-10 rounded-full bg-gray-300 animate-pulse" />
+                ) : path.includes('profile') ? (
                   <button
                     onClick={handleLogout}
-                    className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
+                    disabled={loggingOut}
+                    className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition disabled:opacity-50"
+                    type="button"
                   >
-                    Logout
+                    {loggingOut ? 'Logging out...' : 'Logout'}
                   </button>
                 ) : (
                   <div
@@ -260,23 +292,27 @@ export default function Navbar() {
                     }}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && router.push('/profile')}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') router.push('/profile');
+                    }}
                     aria-label="Go to profile"
                   >
                     <img
                       src={
-                        profileImg && profileImg !== 'null'
-                          ? profileImg
-                          : 'https://res.cloudinary.com/dplwgsngu/image/upload/v1732371530/uvs9ln32r2h5p3cuxeav.jpg'
+                        userData?.profile ??
+                        'https://res.cloudinary.com/dplwgsngu/image/upload/v1732371530/uvs9ln32r2h5p3cuxeav.jpg'
                       }
                       alt="profile"
                       className="rounded-full h-10 w-10 object-cover border"
                     />
-                    <span className="text-base font-semibold">{name}</span>
+                    <span className="text-base font-semibold">{userData?.name || 'User'}</span>
                   </div>
                 )
               ) : (
-                <Link href="/login" className="block w-full text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+                <Link
+                  href="/login"
+                  className="block w-full text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                >
                   SIGNIN / SIGNUP
                 </Link>
               )}
@@ -292,26 +328,33 @@ export default function Navbar() {
               <Link href="/products" className="hover:text-blue-600 transition">
                 SHOP
               </Link>
-              <button onClick={handleLogout} className="text-red-500 hover:text-red-700 font-semibold">
-                Logout
-              </button>
+              {user && (
+                <button
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="text-red-500 hover:text-red-700 font-semibold disabled:opacity-50"
+                  type="button"
+                >
+                  {loggingOut ? 'Logging out..' : 'Logout'}
+                </button>
+              )}
             </nav>
           </div>
         </div>
       )}
 
-      {/* Cart Sidebar */}
+
       {seeBucket && (
         <div className="w-full sm:w-[80%] md:w-[60%] lg:w-[40%] h-screen bg-white absolute top-0 right-0 border-slate-200 border-2 transition-all duration-300 flex flex-col items-center z-20">
           <div className="w-full h-[7%] border-b-2 border-slate-300 flex items-center justify-between px-4 text-black">
             <h1 className="text-lg font-semibold">Shopping Cart</h1>
-            <button onClick={() => setSeeBucket(false)} aria-label="Close cart sidebar">
+            <button onClick={() => setSeeBucket(false)} aria-label="Close cart sidebar" type="button">
               <CancelIcon />
             </button>
           </div>
           <div className="h-[68%] w-full overflow-auto flex flex-col items-center gap-4 p-4 text-black">
-            {carts.length > 0 ? (
-              carts.map((cart) => {
+            {cartItems.length > 0 ? (
+              cartItems.map((cart) => {
                 const price = getPrice(cart);
                 const quantity = cart.quantity ?? 1;
                 const itemSubtotal = price * quantity;
@@ -327,8 +370,9 @@ export default function Navbar() {
                       <div className="flex justify-between">
                         <h1>{cart.product_id.name}</h1>
                         <button
-                          onClick={() => handleDelete(loggedIn ? cart._id : cart.product_id._id)}
+                          onClick={() => handleDelete(cart._id)}
                           aria-label={`Remove ${cart.product_id.name} from cart`}
+                          type="button"
                         >
                           <ClearIcon />
                         </button>
@@ -341,6 +385,7 @@ export default function Navbar() {
                           disabled={quantity <= 1}
                           className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50"
                           aria-label={`Decrease quantity of ${cart.product_id.name}`}
+                          type="button"
                         >
                           -
                         </button>
@@ -352,6 +397,7 @@ export default function Navbar() {
                           disabled={quantity >= 5}
                           className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50"
                           aria-label={`Increase quantity of ${cart.product_id.name}`}
+                          type="button"
                         >
                           +
                         </button>
@@ -367,34 +413,31 @@ export default function Navbar() {
             )}
           </div>
           <div className="w-full border-t border-slate-300 p-4">
-            {carts.length > 0 ? (
+            {cartItems.length > 0 ? (
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between text-black text-lg font-semibold border p-2 rounded-md mb-3">
                   <span>Total</span>
-                  <span>₹{subtotal.toFixed(2)}</span>
+                  <span>
+                    ₹
+                    {cartItems
+                      .reduce((acc, item) => {
+                        const price = getPrice(item);
+                        return acc + price * (item.quantity ?? 1);
+                      }, 0)
+                      .toFixed(2)}
+                  </span>
                 </div>
-                {loggedIn ? (
-                  <button
-                    onClick={() => router.push('/cart')}
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-black hover:text-white transition"
-                  >
-                    VIEW CART
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setSeeBucket(false);
-                      router.push('/login');
-                    }}
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-black hover:text-white transition"
-                  >
-                    LOGIN TO CHECKOUT
-                  </button>
-                )}
-
+                <button
+                  onClick={() => router.push('/cart')}
+                  className="w-full bg-blue-500 text-white py-2 rounded hover:bg-black hover:text-white transition"
+                  type="button"
+                >
+                  VIEW CART
+                </button>
                 <button
                   onClick={() => setSeeBucket(false)}
                   className="w-full bg-blue-500 text-white py-2 rounded hover:bg-black hover:text-white transition"
+                  type="button"
                 >
                   Continue Shopping
                 </button>
@@ -406,6 +449,7 @@ export default function Navbar() {
                   router.push('/products');
                 }}
                 className="w-full bg-blue-500 text-white py-2 rounded hover:bg-black hover:text-white transition"
+                type="button"
               >
                 SHOP NOW
               </button>

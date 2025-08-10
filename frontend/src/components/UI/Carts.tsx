@@ -1,7 +1,9 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
 import useCart from '@/hook/useCart';
+import useAuth from '@/hook/useAuth';
 
 interface CartProductRef {
   _id: string;
@@ -22,8 +24,8 @@ interface Props {
 }
 
 export default function Carts({ onCheckout }: Props) {
+  const { user } = useAuth() as { user: { _id: string } | null };
   const [mounted, setMounted] = useState(false);
-
   const { carts, updateCartQuantity, deleteCart } = useCart();
   const [localCarts, setLocalCarts] = useState<CartLine[]>([]);
 
@@ -32,10 +34,19 @@ export default function Carts({ onCheckout }: Props) {
   }, []);
 
   useEffect(() => {
-    if (mounted && carts) {
+    if (mounted && user && carts) {
       setLocalCarts(carts);
     }
-  }, [carts, mounted]);
+  }, [carts, mounted, user]);
+
+
+  if (!user) {
+    return (
+      <div className="w-full text-center py-10 text-gray-600 font-semibold">
+        Please log in to view your cart.
+      </div>
+    );
+  }
 
   const subtotal = localCarts.reduce((acc, item) => {
     const product = item.product_id as any;
@@ -43,8 +54,8 @@ export default function Carts({ onCheckout }: Props) {
       typeof product.sale_price === 'number'
         ? product.sale_price
         : typeof product.original_price === 'number'
-        ? product.original_price
-        : 0;
+          ? product.original_price
+          : 0;
     return acc + price * item.quantity;
   }, 0);
 
@@ -65,14 +76,15 @@ export default function Carts({ onCheckout }: Props) {
     }
   };
 
-  const handleDelete = async (cartId: string) => {
-    try {
-      await deleteCart(cartId);
-      setLocalCarts((prev) => prev.filter((item) => item._id !== cartId));
-    } catch (error) {
-      console.error('Delete cart item failed:', error);
-    }
-  };
+ const handleDelete = async (cartLineId: string) => {
+  try {
+    await deleteCart(cartLineId); 
+    setLocalCarts((prev) => prev.filter((item) => item._id !== cartLineId));
+  } catch (error) {
+    console.error('Delete cart item failed:', error);
+  }
+};
+
 
   if (!mounted) return null;
 
@@ -106,8 +118,8 @@ export default function Carts({ onCheckout }: Props) {
             typeof product.sale_price === 'number'
               ? product.sale_price
               : typeof product.original_price === 'number'
-              ? product.original_price
-              : 0;
+                ? product.original_price
+                : 0;
           const itemSubtotal = price * cart.quantity;
 
           return (

@@ -1,11 +1,12 @@
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/UI/Navbar';
 import Carts from '@/components/UI/Carts';
 import useCart from '@/hook/useCart';
 import { useRouter } from 'next/navigation';
-import { getUser } from '@/networks/customernetworks';
+import { getUser, logout } from '@/networks/customernetworks';
 import Orders from '@/components/UI/Orders';
+import useAuth from "@/hook/useAuth";
 
 interface CartItem {
   _id: string;
@@ -13,78 +14,66 @@ interface CartItem {
   quantity: number;
 }
 
+interface User {
+  _id: string;
+}
+
 export default function Page() {
   const router = useRouter();
-  const { carts, deleteCart } = useCart();
+  const { carts } = useCart();
+  const { user, loading: authLoading } = useAuth() as { user: User | null; loading: boolean };
 
-
-  const [profileImg, setProfileImg] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'account' | 'orders' | 'cart'>('account');
-
+  const [loadingUserData, setLoadingUserData] = useState(false);
 
   const typedCarts: CartItem[] = (carts as CartItem[]) || [];
- const subtotal =
-  typedCarts.reduce(
-    (acc, item) => acc + (item.total_price ?? 0) * (item.quantity ?? 0),
-    0
-  );
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const storedUserId = localStorage.getItem('eco_user_id');
-    const storedName = localStorage.getItem('eco_user_name');
-    const storedImg = localStorage.getItem('eco_user_image');
-    const storedTab = localStorage.getItem('activeTab');
-
-    setUserId(storedUserId && storedUserId !== 'null' ? storedUserId : null);
-    setName(storedName && storedName !== 'null' ? storedName : null);
-    setProfileImg(storedImg && storedImg !== 'null' ? storedImg : null);
-    if (storedTab === 'orders' || storedTab === 'cart' || storedTab === 'account') {
-      setActiveTab(storedTab);
-    }
-  }, []);
 
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('activeTab', activeTab);
+    if (!authLoading && !user) {
+      router.replace('/login');
     }
-  }, [activeTab]);
+  }, [authLoading, user, router]);
 
 
   useEffect(() => {
-    if (!userId) {
-      return;
-    }
+    if (!user?._id) return;
 
-    const fetchUser = async () => {
+    const fetchUserData = async () => {
+      setLoadingUserData(true);
       try {
-       
-        const data = await getUser(userId);
+        const data = await getUser(user._id);
         setUserData(data);
       } catch (err) {
-        console.error('User fetch error:', err);
+        console.error('Failed to fetch user data:', err);
+      } finally {
+        setLoadingUserData(false);
       }
     };
 
-    fetchUser();
-  }, [userId]);
-
+    fetchUserData();
+  }, [user]);
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.clear();
-    }
+    logout();
     router.replace('/login');
   };
 
-
   const fallbackImg =
     'https://res.cloudinary.com/dplwgsngu/image/upload/v1732371530/uvs9ln32r2h5p3cuxeav.jpg';
+
+  if (authLoading || loadingUserData) {
+    return (
+      <main className="flex items-center justify-center min-h-screen bg-white">
+        Loading ...
+      </main>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <main className="flex flex-col bg-white min-h-screen">
@@ -92,20 +81,20 @@ export default function Page() {
 
       <section className="w-full min-h-screen flex flex-col md:flex-row bg-slate-200 gap-4 p-2 md:p-6">
 
+
         <div className="w-full md:w-[25%] lg:w-[20%] bg-white rounded-lg p-4 flex flex-col text-black gap-4 shadow-md">
 
           <div className="flex items-center gap-4">
             <img
-              src={profileImg ?? fallbackImg}
+              src={userData?.profile ?? fallbackImg}
               alt="profile"
               className="rounded-full h-16 w-16 md:h-20 md:w-20 border border-gray-300 object-cover"
             />
             <div className="flex flex-col">
               <p className="font-semibold text-lg">Hello,</p>
-              <p className="text-sm text-gray-700">{name || 'User'}</p>
+              <p className="text-sm text-gray-700">{userData?.name ?? 'User'}</p>
             </div>
           </div>
-
 
           <nav className="flex flex-row md:flex-col justify-around md:justify-start gap-4 mt-4">
             <button
@@ -131,7 +120,9 @@ export default function Page() {
             </button>
             <button
               className="font-semibold text-base md:text-lg text-left hover:text-red-500"
-              onClick={handleLogout}
+              onClick={() => {
+                handleLogout();
+              }}
             >
               Logout
             </button>
@@ -140,11 +131,12 @@ export default function Page() {
 
 
         <div className="w-full md:w-[75%] lg:w-[80%] min-h-screen flex flex-col text-black bg-white rounded-lg p-4 shadow-md">
+
           {activeTab === 'account' && (
             <>
               <h2 className="text-lg md:text-2xl font-semibold px-2 mb-4">Personal Information</h2>
               {userData ? (
-                <div className="relative bg-white p-4 md:p-6   text-gray-800 w-full  mx-auto">
+                <div className="relative bg-white p-4 md:p-6 text-gray-800 w-full mx-auto">
                   <button
                     onClick={() => alert('Change Profile Clicked!')}
                     className="absolute top-3 right-3 bg-blue-600 text-white text-xs md:text-sm px-3 py-1 rounded-md shadow hover:bg-blue-700 transition"
@@ -152,10 +144,9 @@ export default function Page() {
                     Change Profile
                   </button>
 
-          
                   <div className="flex flex-col md:flex-row items-center gap-4 mb-6 mt-6 md:mt-0">
                     <img
-                      src={userData.profile}
+                      src={userData.profile ?? fallbackImg}
                       alt="Profile"
                       className="w-24 h-24 md:w-32 md:h-32 rounded-full border object-cover shadow"
                     />
@@ -167,7 +158,6 @@ export default function Page() {
                     </div>
                   </div>
 
-                 
                   <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                     <div className="bg-gray-50 p-2 rounded border">
                       <p className="text-gray-500 text-sm">Email</p>
@@ -190,13 +180,12 @@ export default function Page() {
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-600 text-sm md:text-base">Loading / No data.</p>
+                <div className="flex items-center justify-center min-h-screen bg-white">
+                  Loading ...
+                </div>
               )}
             </>
           )}
-
-
-
 
           {activeTab === 'orders' && (
             <>
@@ -207,12 +196,7 @@ export default function Page() {
 
           {activeTab === 'cart' && (
             <Carts
-              onCheckout={() => {
-                if (typeof window !== 'undefined') {
-                  localStorage.setItem('checkout_subtotal', subtotal.toString());
-                }
-                router.replace('/checkout');
-              }}
+              onCheckout={() => router.replace('/checkout')}
             />
           )}
         </div>
