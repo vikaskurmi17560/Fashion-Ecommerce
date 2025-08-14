@@ -2,18 +2,24 @@
 import Navbar from '@/components/UI/Navbar';
 import { SignUp } from '@/networks/customernetworks';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
 function Page() {
   const [seePassword, setSeePassword] = useState(false);
   const { register, handleSubmit } = useForm();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function handleSignUp(data: any) {
     try {
       const formData = new FormData();
-
       for (const key in data) {
         if (key === 'profile' && data[key]?.length > 0) {
           formData.append(key, data[key][0]);
@@ -26,6 +32,7 @@ function Page() {
 
       if (response.success) {
         toast.success('Account created successfully');
+        router.replace('/login');
       } else {
         toast.error(response.message || 'Signup failed');
       }
@@ -33,35 +40,36 @@ function Page() {
       toast.error(error?.response?.data?.message || 'Something went wrong');
     }
   }
-
+  if (!mounted) return null;
   return (
-    <div className="flex flex-col gap-y-32 min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <Navbar />
-      <div className="flex flex-1 flex-col justify-center items-center gap-10">
+      <div className="flex flex-1 flex-col justify-center items-center px-4 py-8">
         <form
           onSubmit={handleSubmit(handleSignUp)}
-          className="flex w-[90vw] md:w-[40vw] border-2 flex-col items-center justify-center p-4 gap-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)] bg-white"
+          className="flex w-full sm:w-[80vw] md:w-[60vw] lg:w-[40vw] border border-gray-200 flex-col items-center p-6 gap-4 rounded-lg shadow-lg bg-white"
         >
-          <div className="flex flex-col mb-10 text-center">
-            <div className="text-2xl font-bold text-blue-500">Welcome!</div>
-            <div className="text-xl font-semibold text-blue-500">
-              Register Your Account Here
-            </div>
+
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-blue-500">Welcome!</h1>
+            <p className="text-gray-600 mt-1">Register your account here</p>
           </div>
+
 
           <input
             {...register('name')}
             placeholder="Enter your name"
             required
-            className="w-full px-4 py-3 border-2 rounded-md text-gray-500 outline-none focus:ring-blue-200 focus:ring-2"
+            className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
+
 
           <input
             {...register('email')}
             type="email"
             placeholder="Enter your email"
             required
-            className="w-full px-4 py-3 border-2 rounded-md text-gray-500 outline-none focus:ring-blue-200 focus:ring-2"
+            className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
 
           <input
@@ -69,14 +77,16 @@ function Page() {
             type="tel"
             placeholder="Enter your phone number"
             required
-            className="w-full px-4 py-3 border-2 rounded-md text-gray-500 outline-none focus:ring-blue-200 focus:ring-2"
+            autoComplete="tel"
+            className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
+
 
           <select
             {...register('gender')}
             required
             defaultValue=""
-            className="w-full px-4 py-3 border-2 rounded-md text-gray-500 outline-none focus:ring-blue-200 focus:ring-2"
+            className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
           >
             <option value="" disabled>
               Select Gender
@@ -86,50 +96,55 @@ function Page() {
             <option value="Other">Other</option>
           </select>
 
+
           <input
             {...register('profile')}
             type="file"
             required
-            className="w-full px-4 py-3 border-2 rounded-md text-gray-500 outline-none focus:ring-blue-200 focus:ring-2"
+            className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
 
-          <div className="relative flex w-full items-center gap-2">
+
+          <div className="relative w-full">
             <input
               {...register('password')}
               type={seePassword ? 'text' : 'password'}
               placeholder="Enter password"
               required
-              className="w-full px-4 py-3 border-2 rounded-md text-gray-500 outline-none focus:ring-blue-200 focus:ring-2"
+              autoComplete="new-password"
+              className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
               maxLength={16}
             />
             <button
               type="button"
               onClick={() => setSeePassword(!seePassword)}
-              className="absolute right-2 text-blue-500 text-sm"
+              className="absolute right-3 top-3 text-blue-500 text-sm"
             >
               {seePassword ? 'Hide' : 'Show'}
             </button>
           </div>
 
-          <div className="relative flex w-full items-center gap-2">
-            <input
-              {...register('confirm_password')}
-              type={seePassword ? 'text' : 'password'}
-              placeholder="Confirm password"
-              required
-              className="w-full px-4 py-3 border-2 rounded-md text-gray-500 outline-none focus:ring-blue-200 focus:ring-2"
-              maxLength={16}
-            />
-          </div>
+
+          <input
+            {...register('confirm_password')}
+            type={seePassword ? 'text' : 'password'}
+            placeholder="Enter password"
+            required
+            autoComplete="confirm-password"
+            className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
+            maxLength={16}
+          />
+
 
           <button
             type="submit"
-            className="w-full font-bold px-4 py-3 text-white bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 rounded-md"
+            className="w-full font-bold px-4 py-3 text-white bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-md hover:opacity-90 transition"
           >
             Submit & Register
           </button>
 
-          <div className="flex w-full justify-between mt-5 text-gray-500 text-sm">
+
+          <div className="flex w-full flex-col sm:flex-row justify-between mt-5 text-gray-500 text-sm text-center sm:text-left gap-2">
             <Link href="/login" className="hover:underline">
               Already have an account?
             </Link>

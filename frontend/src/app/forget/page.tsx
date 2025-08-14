@@ -1,59 +1,67 @@
-'use client'
+'use client';
 import Navbar from '@/components/UI/Navbar';
-import { Forgot } from '@/networks/customernetworks';
-import { useRouter } from 'next/router';
-import React, { useState } from 'react'
+import { Forgot, ForgotFormData } from '@/networks/customernetworks';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
-function page() {
-  const [seepassword,setSeePassword]=useState<boolean>(false);
-  const {register,handleSubmit}=useForm();
+function Page() {
+  const [mounted, setMounted] = useState(false);
+  const { register, handleSubmit } = useForm<ForgotFormData>();
   const router = useRouter();
 
-  async function handleForgot(data:any){
-    try{
-        const response= await Forgot(data);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-        if(response.success){
-          toast.success(response.message);
-        }
+  async function handleForgot(data: ForgotFormData) {
+    try {
+      const response = await Forgot(data);
+      if (response.success) {
+        toast.success(response.message);
+        router.replace("/checkmail");
+      } else {
+        toast.error(response.message || "Something went wrong.");
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "An error occurred.");
     }
-    catch(error:any){
-            
-      toast.error(error.response.message)
   }
-  }
+
+  if (!mounted) return null;
+
   return (
-    <div  className="flex flex-col gap-y-32  ">
-            <Navbar />
-    <div className='flex flex-1 flex-col  items-center justify-center  gap-10'>
-      
-      <form onSubmit={handleSubmit(handleForgot)} className='flex  w-[40vw] border-2 flex-col  items-center justify-center p-4 gap-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]' >
-        <div className="flex flex-col gap-2">
-          <h1 className='text-2xl text-blue-500 font-bold text-center'>Hey User!</h1>
-          <h1 className='text-2xl text-blue-500 font-bold'>Set New Password</h1>
-        </div>
-        <div className="flex flex-col justify-center items-center gap-5  w-[35vw] ">
+    <div className="flex flex-col gap-y-16 min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+      <Navbar />
+      <div className="flex flex-1 flex-col items-center justify-center gap-10 px-4">
+        <form
+          onSubmit={handleSubmit(handleForgot)}
+          className="flex w-full max-w-md border border-gray-200 flex-col items-center justify-center p-6 gap-4 rounded-md shadow-md bg-white"
+        >
+          <div className="flex flex-col gap-2 text-center">
+            <h1 className="text-2xl text-blue-500 font-bold">Hey User!</h1>
+            <p className="text-gray-700">Enter your linked email to reset your password</p>
+          </div>
 
-          <input {...register("email")} type='text' placeholder='Enter  Email' className='w-full px-4 text-gray-500 py-3 border-2 rounded-md outline-none focus:ring-blue-200 focus:ring-2' required />
+          <input
+            {...register("email")}
+            type="email"
+            placeholder="Enter Email"
+            className="w-full px-4 text-gray-500 py-3 border rounded-md outline-none focus:ring-blue-200 focus:ring-2"
+            required
+          />
 
-
-          <input {...register("password")} type={seepassword ? "text":"password"} placeholder='Enter New Password' className='w-full px-4 text-gray-500 py-3 border-2 rounded-md outline-none focus:ring-blue-200 focus:ring-2' required />
-          <button onClick={()=>setSeePassword(!seepassword)} type='button' className='absolute right-2' >see</button>
-
-
-          <input {...register("confirm_password")} type={seepassword ? "text" : "password"} placeholder='Enter  New Confirm Password' className='w-full px-4 text-gray-500 py-3 border-2 rounded-md outline-none focus:ring-blue-200 focus:ring-2' required />
-          <button onClick={()=>setSeePassword(!seepassword)} type='button' className='absolute right-2' >see</button>
-
-        </div>
-
-        <button type='submit' className='w-full font-bold px-4 mt-4 py-3 text-white bg-gradient-to-r from-blue-500  via-blue-300 to-blue-500'>Login</button>
-
-      </form>
+          <button
+            type="submit"
+            className="w-full font-bold px-4 mt-4 py-3 text-white bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 rounded-md"
+          >
+            Send Reset-Password Link
+          </button>
+        </form>
+      </div>
     </div>
-    </div>
-  )
+  );
 }
 
-export default page
+export default Page;

@@ -9,7 +9,7 @@ exports.createOrder = async (req, res) => {
         const { amount } = req.body
         const Order = await instance.orders.create({
 
-            amount: amount,
+            amount: amount*100,
             currency: "INR",
             receipt: "receipt#1",
             notes: {

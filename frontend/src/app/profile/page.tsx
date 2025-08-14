@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { getUser, logout } from '@/networks/customernetworks';
 import Orders from '@/components/UI/Orders';
 import useAuth from "@/hook/useAuth";
+import EditProfile from '@/components/UI/EditProfile';
 
 interface CartItem {
   _id: string;
@@ -24,8 +25,8 @@ export default function Page() {
   const { user, loading: authLoading } = useAuth() as { user: User | null; loading: boolean };
 
   const [userData, setUserData] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'account' | 'orders' | 'cart'>('account');
-  const [loadingUserData, setLoadingUserData] = useState(false);
+  const [activeTab, setActiveTab] = useState<'account' | 'orders' | 'cart' |'editprofile'>('account');
+  const [loadingUserData, setLoadingUserData] = useState<boolean>(false);
 
   const typedCarts: CartItem[] = (carts as CartItem[]) || [];
 
@@ -46,7 +47,6 @@ export default function Page() {
         const data = await getUser(user._id);
         setUserData(data);
       } catch (err) {
-        console.error('Failed to fetch user data:', err);
       } finally {
         setLoadingUserData(false);
       }
@@ -59,7 +59,7 @@ export default function Page() {
     logout();
     router.replace('/login');
   };
-
+ 
   const fallbackImg =
     'https://res.cloudinary.com/dplwgsngu/image/upload/v1732371530/uvs9ln32r2h5p3cuxeav.jpg';
 
@@ -132,13 +132,13 @@ export default function Page() {
 
         <div className="w-full md:w-[75%] lg:w-[80%] min-h-screen flex flex-col text-black bg-white rounded-lg p-4 shadow-md">
 
-          {activeTab === 'account' && (
+          {activeTab === 'account' && 
             <>
               <h2 className="text-lg md:text-2xl font-semibold px-2 mb-4">Personal Information</h2>
               {userData ? (
                 <div className="relative bg-white p-4 md:p-6 text-gray-800 w-full mx-auto">
                   <button
-                    onClick={() => alert('Change Profile Clicked!')}
+                    onClick={() => setActiveTab('editprofile')}
                     className="absolute top-3 right-3 bg-blue-600 text-white text-xs md:text-sm px-3 py-1 rounded-md shadow hover:bg-blue-700 transition"
                   >
                     Change Profile
@@ -185,7 +185,7 @@ export default function Page() {
                 </div>
               )}
             </>
-          )}
+            }
 
           {activeTab === 'orders' && (
             <>
@@ -193,7 +193,9 @@ export default function Page() {
               <Orders />
             </>
           )}
-
+          {activeTab==='editprofile' && (
+            <EditProfile user={userData} editprofile={activeTab} setEditProfile={setActiveTab}  />
+          )}
           {activeTab === 'cart' && (
             <Carts
               onCheckout={() => router.replace('/checkout')}

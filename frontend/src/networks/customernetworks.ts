@@ -6,6 +6,7 @@ import {
   ForgotUrl,
   GetUserData,
   LogOutUrl,
+  updateDataUrl,
 } from "@/constants";
 
 export async function SignUp(formData: FormData) {
@@ -15,7 +16,6 @@ export async function SignUp(formData: FormData) {
     });
     return response.data;
   } catch (error: any) {
-    console.error("Signup Error:", error.response?.data || error.message);
     throw error;
   }
 }
@@ -40,29 +40,29 @@ export async function logout() {
   }
 }
 
-export async function Forgot(formdata: any) {
+export interface ForgotFormData {
+  email: string;
+}
+
+export async function Forgot(formdata: ForgotFormData) {
   try {
     const response = await axios.post(ForgotUrl, formdata);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 }
-
 export async function Reset(formdata: any) {
   try {
-    const response = await axios.post(`${ResetUrl}?token=${formdata.token}`, formdata);
+    const response = await axios.post(`${ResetUrl}?token=${formdata.token}`,formdata);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw error;
   }
 }
 
 export async function getUser(user_id: string | null) {
   if (!user_id) {
-    console.warn("getUser: user_id is null");
     return null;
   }
   try {
@@ -72,7 +72,18 @@ export async function getUser(user_id: string | null) {
 
     return response.data.userExists;
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    throw error;
+  }
+}
+
+export async function updateData(body: any, user_id: string) {
+  try {
+    const response = await axios.patch(`${updateDataUrl}?user_id=${user_id}`, body, {
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
+    });
+    return response.data.success;
+  } catch (error: any) {
     throw error;
   }
 }

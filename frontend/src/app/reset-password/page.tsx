@@ -1,12 +1,11 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
 import Navbar from '@/components/UI/Navbar';
-import { useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Reset } from '@/networks/customernetworks';
-import { useRouter } from 'next/router';
 
 interface ResetFormData {
   password: string;
@@ -14,78 +13,80 @@ interface ResetFormData {
 }
 
 function Page() {
-  const [seePassword, setSeePassword] = useState<boolean>(false);
+  const [seePassword, setSeePassword] = useState(false);
   const { register, handleSubmit } = useForm<ResetFormData>();
   const params = useSearchParams();
   const router = useRouter();
-  const token = params.get("token");
+  const token = params.get('token');
 
   async function handleReset(data: ResetFormData) {
     try {
-      const formdata = { ...data, token };
-      const res = await Reset(formdata);
+      const formData = { ...data, token };
+      const res = await Reset(formData);
+
       if (res.success) {
         toast.success(res.message);
-        router.replace("/login");
+        router.replace('/login');
       } else {
-        toast.error(res.message || "Failed to reset password");
+        toast.error(res.message || 'Failed to reset password');
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
+      toast.error('Something went wrong');
     }
   }
 
   return (
-    <div className="flex flex-col gap-y-32">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <Navbar />
-      <div className='flex flex-1 flex-col items-center justify-center gap-10'>
-        <form onSubmit={handleSubmit(handleReset)} className='flex w-[40vw] border-2 flex-col items-center justify-center p-4 gap-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)] relative'>
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
+        <form
+          onSubmit={handleSubmit(handleReset)}
+          className="flex w-full sm:w-[80vw] md:w-[60vw] lg:w-[40vw] border border-gray-200 flex-col items-center p-6 gap-6 rounded-lg shadow-lg bg-white"
+        >
 
-          <div className="flex flex-col gap-2">
-            <h1 className='text-2xl text-blue-500 font-bold text-center'>Hey User!</h1>
-            <h1 className='text-2xl text-blue-500 font-bold'>Set New Password</h1>
+          <div className="text-center mb-4">
+            <h1 className="text-3xl font-bold text-blue-500">Hey User!</h1>
+            <p className="text-gray-600 mt-1">Set your new password</p>
           </div>
 
-          <div className="flex flex-col justify-center items-center gap-5 w-[35vw]">
-            <div className="relative w-full">
-              <input
-                {...register("password")}
-                type={seePassword ? "text" : "password"}
-                placeholder='Enter New Password'
-                className='w-full px-4 text-gray-500 py-3 border-2 rounded-md outline-none focus:ring-blue-200 focus:ring-2'
-                required
-              />
-              <button
-                onClick={() => setSeePassword(!seePassword)}
-                type='button'
-                className='absolute right-2 top-3 text-sm text-blue-500'
-              >
-                {seePassword ? "Hide" : "Show"}
-              </button>
-            </div>
 
-            <div className="relative w-full">
-              <input
-                {...register("confirm_password")}
-                type={seePassword ? "text" : "password"}
-                placeholder='Confirm New Password'
-                className='w-full px-4 text-gray-500 py-3 border-2 rounded-md outline-none focus:ring-blue-200 focus:ring-2'
-                required
-              />
-              <button
-                onClick={() => setSeePassword(!seePassword)}
-                type='button'
-                className='absolute right-2 top-3 text-sm text-blue-500'
-              >
-                {seePassword ? "Hide" : "Show"}
-              </button>
-            </div>
+          <div className="relative w-full">
+            <input
+              {...register('password')}
+              type={seePassword ? 'text' : 'password'}
+              placeholder="Enter New Password"
+              required
+              className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
+            />
+            <button
+              type="button"
+              onClick={() => setSeePassword(!seePassword)}
+              className="absolute right-3 top-3 text-sm text-blue-500"
+            >
+              {seePassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+
+          <div className="relative w-full">
+            <input
+              {...register('confirm_password')}
+              type={seePassword ? 'text' : 'password'}
+              placeholder="Confirm New Password"
+              required
+              className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300"
+            />
+            <button
+              type="button"
+              onClick={() => setSeePassword(!seePassword)}
+              className="absolute right-3 top-3 text-sm text-blue-500"
+            >
+              {seePassword ? 'Hide' : 'Show'}
+            </button>
           </div>
 
           <button
-            type='submit'
-            className='w-full font-bold px-4 mt-4 py-3 text-white bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500'
+            type="submit"
+            className="w-full font-bold px-4 py-3 text-white bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-md hover:opacity-90 transition"
           >
             Reset Password
           </button>

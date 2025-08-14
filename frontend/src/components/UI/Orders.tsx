@@ -24,7 +24,6 @@ function Orders() {
         setOrderData([]);
       }
     } catch (error) {
-      console.error('Orders fetch error:', error);
       setOrderData([]);
     }
   }
@@ -64,12 +63,21 @@ function Orders() {
                   </span>
                 </div>
 
-                <div className="flex items-start">
-                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Address:</span>
-                  <span className="text-gray-600">
-                    {order.address ?? 'N/A'}
-                  </span>
-                </div>
+                 <div className="flex items-start">
+                    <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Address:</span>
+                    <span className="text-gray-600">
+                      {order.address ? (
+                        <>
+                          {order.address.firstname} {order.address.lastname},<br />
+                          {order.address.street},<br />
+                          {order.address.city}, {order.address.state} - {order.address.pincode},<br />
+                          {order.address.country}
+                        </>
+                      ) : (
+                        'N/A'
+                      )}
+                    </span>
+                  </div>
 
                 <div className="flex items-start">
                   <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Payment ID:</span>

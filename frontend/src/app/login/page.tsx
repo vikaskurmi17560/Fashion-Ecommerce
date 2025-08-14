@@ -8,72 +8,80 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
 function Page() {
-  const [seepassword, setSeePassword] = useState(false);
+  const [seePassword, setSeePassword] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<LoginFormData>();
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  async function handleLogIN(data: any) {
+  async function handleLogIN(data: LoginFormData) {
     try {
       const response = await LogIn(data);
       if (response.success) {
-        toast.success("Account Login successfully");
-        router.replace("/");
+        toast.success('Account logged in successfully');
+        router.replace('/profile');
+      } else {
+        toast.error(response.message || 'Login failed');
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Login failed");
+      toast.error(error?.response?.data?.message || 'Login failed');
     }
   }
 
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col gap-y-32">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <Navbar />
-      <div className="flex flex-1 flex-col justify-center items-center gap-10">
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
         <form
           onSubmit={handleSubmit(handleLogIN)}
-          className="flex w-[90vw] md:w-[40vw] border-2 flex-col items-center justify-center p-4 gap-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]"
+          className="flex w-full sm:w-[80vw] md:w-[60vw] lg:w-[40vw] border border-gray-200 flex-col items-center p-6 gap-6 rounded-lg shadow-lg bg-white"
         >
-          <div className="flex flex-col mb-10 text-center">
-            <div className="text-2xl font-bold text-blue-500">Hey User!</div>
-            <div className="text-xl font-semibold text-blue-500">
-              Login to your Account
-            </div>
+    
+          <div className="text-center mb-4">
+            <h1 className="text-3xl font-bold text-blue-500">Hey User!</h1>
+            <p className="text-gray-600 mt-1">Login to your account</p>
           </div>
 
           <input
-            {...register("email")}
+            {...register('email')}
             type="email"
             placeholder="Enter your email"
-            className="w-full px-4 text-gray-500 py-3 border-2 rounded-md outline-none focus:ring-blue-200 focus:ring-2"
+            autoComplete="username"
             required
+            className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300 transition"
           />
 
-          <div className="relative flex w-full items-center gap-2">
+          <div className="relative w-full">
             <input
-              {...register("password")}
-              type={seepassword ? "text" : "password"}
+              {...register('password')}
+              type={seePassword ? 'text' : 'password'}
+              placeholder="Enter Password"
+               autoComplete="current-password"
               maxLength={16}
               required
-              placeholder="Enter Password"
-              className="w-full px-4 text-gray-500 py-3 border-2 rounded-md outline-none focus:ring-blue-200 focus:ring-2"
+              className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300 transition"
             />
             <button
               type="button"
-              onClick={() => setSeePassword(!seepassword)}
-              className="absolute right-2 text-blue-500 text-sm"
+              onClick={() => setSeePassword(!seePassword)}
+              className="absolute right-3 top-3 text-sm text-blue-500 hover:underline"
             >
-              {seepassword ? "Hide" : "Show"}
+              {seePassword ? 'Hide' : 'Show'}
             </button>
           </div>
 
-          <div className="flex w-full justify-between mt-5 text-gray-500 text-sm">
+          <div className="flex w-full justify-between text-gray-500 text-sm">
             <Link href="/signup" className="hover:underline">
               New account
             </Link>
@@ -84,7 +92,7 @@ function Page() {
 
           <button
             type="submit"
-            className="w-full font-bold px-4 py-3 text-white bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 rounded-md"
+            className="w-full font-bold px-4 py-3 text-white bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-md hover:opacity-90 transition"
           >
             Login
           </button>

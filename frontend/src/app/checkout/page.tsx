@@ -87,18 +87,19 @@ function CheckoutPage() {
   };
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!selectedAddressId) return toast.error('Please select a delivery address');
-    if (!selectedPayment) return toast.error('Please select a payment method');
+  if (!selectedAddressId) return toast.error("Please select a delivery address");
+  if (!selectedPayment) return toast.error("Please select a payment method");
+  if (!user) return toast.error("User not logged in");
 
-    try {
-      await handleCheckout(subtotal * 100, router, selectedAddressId, carts);
-    } catch (err) {
-      toast.error('Payment failed. Try again.');
-    }
-  };
-
+  try {
+    await handleCheckout(subtotal, router, selectedAddressId, carts, user);
+  } catch (err) {
+    console.error("Payment failed:", err);
+    toast.error("Payment failed. Try again.");
+  }
+};
   if (authLoading) {
     return (
       <main className="w-full min-h-screen flex justify-center items-center">
