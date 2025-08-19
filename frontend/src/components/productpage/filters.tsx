@@ -35,14 +35,14 @@ function Filters() {
         <h2 className="text-lg font-semibold mb-4">Filter by Price</h2>
         <input
           type="range"
-          min={300}
+          min={200}
           max={2000}
           value={localPrice}
           onChange={(e) => setLocalPrice(Number(e.target.value))}
           className="w-full"
         />
         <div className="flex justify-between mt-4 text-gray-700">
-          <span>Price: ₹300 – ₹{localPrice}</span>
+          <span>Price: ₹200 – ₹{localPrice}</span>
         </div>
       </div>
 

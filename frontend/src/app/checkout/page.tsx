@@ -87,19 +87,19 @@ function CheckoutPage() {
   };
 
   const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!selectedAddressId) return toast.error("Please select a delivery address");
-  if (!selectedPayment) return toast.error("Please select a payment method");
-  if (!user) return toast.error("User not logged in");
+    if (!selectedAddressId) return toast.error("Please select a delivery address");
+    if (!selectedPayment) return toast.error("Please select a payment method");
+    if (!user) return toast.error("User not logged in");
 
-  try {
-    await handleCheckout(subtotal, router, selectedAddressId, carts, user);
-  } catch (err) {
-    console.error("Payment failed:", err);
-    toast.error("Payment failed. Try again.");
-  }
-};
+    try {
+      await handleCheckout(subtotal, router, selectedAddressId, carts, user);
+    } catch (err) {
+      console.error("Payment failed:", err);
+      toast.error("Payment failed. Try again.");
+    }
+  };
   if (authLoading) {
     return (
       <main className="w-full min-h-screen flex justify-center items-center">
@@ -181,9 +181,54 @@ function CheckoutPage() {
             <div className="w-full bg-white border rounded shadow p-4">
               <h2 className="text-xl font-bold text-black mb-4">Your Order</h2>
 
-              <div className="text-sm md:text-base border-b py-2">
-                <Carts />
+              <div className="w-full max-w-5xl mx-auto space-y-4 p-4">
+                {carts && carts.map((cart: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex flex-col md:flex-row items-start md:items-center gap-6 border rounded-2xl p-4 shadow-md bg-white"
+                  >
+                    <div className="w-full md:w-1/4 flex justify-center">
+                      <img
+                        src={cart.product_id.cover_image}
+                        alt={cart.product_id.name}
+                        className="w-32 h-32 object-cover rounded-xl border"
+                      />
+                    </div>
+
+                
+                    <div className="w-full md:w-3/4 grid grid-cols-2 md:grid-cols-4 gap-4">
+               
+                      <div>
+                        <h3 className="text-sm md:text-base font-semibold text-gray-700">Product</h3>
+                        <p className="text-gray-600">{cart.product_id.name}</p>
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm md:text-base font-semibold text-gray-700">Quantity</h3>
+                        <p className="text-gray-600">{cart.quantity}</p>
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm md:text-base font-semibold text-gray-700">Price</h3>
+                        <p className="text-gray-600">₹{cart.total_price}</p>
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm md:text-base font-semibold text-gray-700">Total</h3>
+                        <p className="text-green-600 font-medium">₹{cart.quantity * cart.total_price}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="border-t pt-4 mt-6 flex justify-between items-center">
+                  <h2 className="text-lg font-bold text-gray-800">Cart Total</h2>
+                  <p className="text-xl font-semibold text-green-600">
+                    ₹{subtotal}
+                  </p>
+                </div>
               </div>
+
 
               <div className="mt-6 flex flex-col gap-4 text-sm md:text-base text-slate-800">
                 <label className="flex gap-2 items-center">
@@ -206,17 +251,6 @@ function CheckoutPage() {
                   />
                   Check payments
                 </label>
-                <label className="flex gap-2 items-center">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="cod"
-                    checked={selectedPayment === 'cod'}
-                    onChange={(e) => setSelectedPayment(e.target.value)}
-                  />
-                  Cash on delivery
-                </label>
-
                 <button
                   type="submit"
                   className={`mt-4 ${user

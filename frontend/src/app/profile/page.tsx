@@ -8,6 +8,7 @@ import { getUser, logout } from '@/networks/customernetworks';
 import Orders from '@/components/UI/Orders';
 import useAuth from "@/hook/useAuth";
 import EditProfile from '@/components/UI/EditProfile';
+import { useHelpStore } from '@/service/help';
 
 interface CartItem {
   _id: string;
@@ -25,18 +26,18 @@ export default function Page() {
   const { user, loading: authLoading } = useAuth() as { user: User | null; loading: boolean };
 
   const [userData, setUserData] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'account' | 'orders' | 'cart' |'editprofile'>('account');
+  const [activeTab, setActiveTab] = useState<'account' | 'orders' | 'cart' | 'editprofile'>('account');
   const [loadingUserData, setLoadingUserData] = useState<boolean>(false);
 
   const typedCarts: CartItem[] = (carts as CartItem[]) || [];
 
+  const { setProfile, name, profile, email, gender, phone_no } = useHelpStore();
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace('/login');
     }
   }, [authLoading, user, router]);
-
 
   useEffect(() => {
     if (!user?._id) return;
@@ -45,21 +46,38 @@ export default function Page() {
       setLoadingUserData(true);
       try {
         const data = await getUser(user._id);
+
+        setProfile({
+          name: data.name,
+          profile: data.profile,
+          email: data.email,
+          phone_no: Number(data.phone_no),
+          gender: data.gender,
+        });
+
         setUserData(data);
       } catch (err) {
+        console.error("Error fetching user:", err);
       } finally {
         setLoadingUserData(false);
       }
     };
 
     fetchUserData();
-  }, [user]);
+  }, [user, setProfile]);
 
   const handleLogout = () => {
     logout();
+    setProfile({
+      name: "",
+      profile: "",
+      email: "",
+      phone_no: 0,
+      gender: "",
+    })
     router.replace('/login');
   };
- 
+
   const fallbackImg =
     'https://res.cloudinary.com/dplwgsngu/image/upload/v1732371530/uvs9ln32r2h5p3cuxeav.jpg';
 
@@ -81,48 +99,41 @@ export default function Page() {
 
       <section className="w-full min-h-screen flex flex-col md:flex-row bg-slate-200 gap-4 p-2 md:p-6">
 
-
         <div className="w-full md:w-[25%] lg:w-[20%] bg-white rounded-lg p-4 flex flex-col text-black gap-4 shadow-md">
-
           <div className="flex items-center gap-4">
             <img
-              src={userData?.profile ?? fallbackImg}
+              src={profile || fallbackImg}
               alt="profile"
               className="rounded-full h-16 w-16 md:h-20 md:w-20 border border-gray-300 object-cover"
             />
             <div className="flex flex-col">
               <p className="font-semibold text-lg">Hello,</p>
-              <p className="text-sm text-gray-700">{userData?.name ?? 'User'}</p>
+              <p className="text-sm text-gray-700">{name || 'User'}</p>
             </div>
           </div>
 
           <nav className="flex flex-row md:flex-col justify-around md:justify-start gap-4 mt-4">
             <button
-              className={`font-semibold text-base md:text-lg text-left ${activeTab === 'account' ? 'text-blue-600' : 'hover:text-blue-500'
-                }`}
+              className={`font-semibold text-base md:text-lg text-left ${activeTab === 'account' ? 'text-blue-600' : 'hover:text-blue-500'}`}
               onClick={() => setActiveTab('account')}
             >
               My Account
             </button>
             <button
-              className={`font-semibold text-base md:text-lg text-left ${activeTab === 'orders' ? 'text-blue-600' : 'hover:text-blue-500'
-                }`}
+              className={`font-semibold text-base md:text-lg text-left ${activeTab === 'orders' ? 'text-blue-600' : 'hover:text-blue-500'}`}
               onClick={() => setActiveTab('orders')}
             >
               My Orders
             </button>
             <button
-              className={`font-semibold text-base md:text-lg text-left ${activeTab === 'cart' ? 'text-blue-600' : 'hover:text-blue-500'
-                }`}
+              className={`font-semibold text-base md:text-lg text-left ${activeTab === 'cart' ? 'text-blue-600' : 'hover:text-blue-500'}`}
               onClick={() => setActiveTab('cart')}
             >
               My Cart
             </button>
             <button
               className="font-semibold text-base md:text-lg text-left hover:text-red-500"
-              onClick={() => {
-                handleLogout();
-              }}
+              onClick={handleLogout}
             >
               Logout
             </button>
@@ -131,8 +142,7 @@ export default function Page() {
 
 
         <div className="w-full md:w-[75%] lg:w-[80%] min-h-screen flex flex-col text-black bg-white rounded-lg p-4 shadow-md">
-
-          {activeTab === 'account' && 
+          {activeTab === 'account' && (
             <>
               <h2 className="text-lg md:text-2xl font-semibold px-2 mb-4">Personal Information</h2>
               {userData ? (
@@ -146,30 +156,30 @@ export default function Page() {
 
                   <div className="flex flex-col md:flex-row items-center gap-4 mb-6 mt-6 md:mt-0">
                     <img
-                      src={userData.profile ?? fallbackImg}
+                      src={profile || fallbackImg}
                       alt="Profile"
                       className="w-24 h-24 md:w-32 md:h-32 rounded-full border object-cover shadow"
                     />
                     <div className="text-center md:text-left">
-                      <p className="text-2xl font-bold">{userData.name}</p>
+                      <p className="text-2xl font-bold">{name}</p>
                       <p className="text-sm text-gray-500">
                         Member since {new Date(userData.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="bg-gray-50 p-2 rounded border">
                       <p className="text-gray-500 text-sm">Email</p>
-                      <p className="text-lg font-semibold">{userData.email}</p>
+                      <p className="text-lg font-semibold">{email}</p>
                     </div>
                     <div className="bg-gray-50 p-2 rounded border">
                       <p className="text-gray-500 text-sm">Phone</p>
-                      <p className="text-lg font-semibold">{userData.phone_no}</p>
+                      <p className="text-lg font-semibold">{phone_no}</p>
                     </div>
                     <div className="bg-gray-50 p-2 rounded border">
                       <p className="text-gray-500 text-sm">Gender</p>
-                      <p className="text-lg font-semibold capitalize">{userData.gender}</p>
+                      <p className="text-lg font-semibold capitalize">{gender}</p>
                     </div>
                     <div className="bg-gray-50 p-2 rounded border">
                       <p className="text-gray-500 text-sm">Account Created</p>
@@ -185,7 +195,7 @@ export default function Page() {
                 </div>
               )}
             </>
-            }
+          )}
 
           {activeTab === 'orders' && (
             <>
@@ -193,13 +203,11 @@ export default function Page() {
               <Orders />
             </>
           )}
-          {activeTab==='editprofile' && (
-            <EditProfile user={userData} editprofile={activeTab} setEditProfile={setActiveTab}  />
+          {activeTab === 'editprofile' && (
+            <EditProfile user_id={userData._id} editprofile={activeTab} setEditProfile={setActiveTab} />
           )}
           {activeTab === 'cart' && (
-            <Carts
-              onCheckout={() => router.replace('/checkout')}
-            />
+            <Carts onCheckout={() => router.replace('/checkout')} />
           )}
         </div>
       </section>

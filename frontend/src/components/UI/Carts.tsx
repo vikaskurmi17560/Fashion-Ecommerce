@@ -24,10 +24,67 @@ interface Props {
 }
 
 export default function Carts({ onCheckout }: Props) {
-  const { user } = useAuth() as { user: { _id: string } | null };
+  const { user , loading} = useAuth() as { user: { _id: string } | null , loading: boolean };
   const [mounted, setMounted] = useState(false);
   const { carts, updateCartQuantity, deleteCart } = useCart();
   const [localCarts, setLocalCarts] = useState<CartLine[]>([]);
+  
+  function Loader() {
+  return (
+    <div className="w-full min-h-screen bg-slate-50 flex flex-col animate-pulse">
+      <h1 className="text-slate-700 font-extrabold text-center text-3xl md:text-5xl lg:text-7xl mb-6">
+        Cart
+      </h1>
+
+      <div className="w-full max-w-7xl mx-auto bg-white rounded-md shadow overflow-x-auto border border-slate-300">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 text-center text-sm md:text-base font-bold bg-slate-200 py-3 px-2 border-b border-slate-300">
+          <div>Remove</div>
+          <div>Image</div>
+          <div className="hidden sm:block">Name</div>
+          <div className="hidden lg:block">Price</div>
+          <div>Qty</div>
+          <div>Subtotal</div>
+        </div>
+
+        {[0, 1, 2,3].map((_, idx) => (
+          <div
+            key={idx}
+            className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 items-center text-center text-sm md:text-base py-4 px-2 border-b border-slate-200 bg-slate-50"
+          >
+            <div className="h-6 w-6 bg-gray-300 rounded mx-auto" />
+            <div className="h-20 w-20 bg-gray-300 rounded-md mx-auto" />
+            <div className="hidden sm:block h-6 bg-gray-300 rounded mx-auto" />
+            <div className="hidden lg:block h-6 bg-gray-300 rounded mx-auto" />
+            <div className="flex items-center justify-center gap-2 mx-auto">
+              <div className="h-6 w-6 bg-gray-300 rounded" />
+              <div className="h-6 w-6 bg-gray-300 rounded" />
+              <div className="h-6 w-6 bg-gray-300 rounded" />
+            </div>
+            <div className="h-6 bg-gray-300 rounded mx-auto" />
+          </div>
+        ))}
+      </div>
+
+      <div className="w-full max-w-7xl px-4 pb-10 mx-auto mt-8 text-black">
+        <div className="flex justify-end">
+          <div className="w-full sm:w-3/4 md:w-1/2 lg:w-1/3 border border-slate-300 rounded-lg bg-white shadow-md p-4 space-y-4">
+            <div className="h-8 w-1/2 bg-gray-300 rounded mb-2" />
+            <div className="flex justify-between border p-2 rounded-md">
+              <div className="h-6 w-24 bg-gray-300 rounded" />
+              <div className="h-6 w-16 bg-gray-300 rounded" />
+            </div>
+            <div className="flex justify-between border p-2 rounded-md">
+              <div className="h-6 w-24 bg-gray-300 rounded" />
+              <div className="h-6 w-16 bg-gray-300 rounded" />
+            </div>
+            <div className="h-12 bg-gray-300 rounded w-full mt-4" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
   useEffect(() => {
     setMounted(true);
@@ -39,7 +96,7 @@ export default function Carts({ onCheckout }: Props) {
     }
   }, [carts, mounted, user]);
 
-
+if(loading) return <Loader />
   if (!user) {
     return (
       <div className="w-full text-center py-10 text-gray-600 font-semibold">

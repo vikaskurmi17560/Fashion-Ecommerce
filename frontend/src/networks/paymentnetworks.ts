@@ -96,7 +96,6 @@ export async function handleCheckout(
 
               await CreateOrder(orderPayload);
               await CartDeleteByUser(customer_id);
-
               toast.success("Payment successful");
               router.replace(`/success?razorpay_payment_id=${verifyRes.data.data}`);
             } else {

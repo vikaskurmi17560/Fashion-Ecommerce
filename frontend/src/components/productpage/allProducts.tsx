@@ -22,7 +22,6 @@ function AllProducts() {
     searchTerm,
   } = useProductStore();
 
-
   useEffect(() => {
     fetchProducts(currentPage);
   }, [currentPage, filterByCategory, filterByPrice, searchTerm]);
@@ -41,16 +40,36 @@ function AllProducts() {
     }
   };
 
-  if (loading) return <div className="p-4 text-center">Loading products...</div>;
+  const renderLoader = () => {
+    return [...Array(8)].map((_, idx) => (
+      <div
+        key={idx}
+        className="animate-pulse flex flex-col justify-between rounded-2xl border border-slate-200 p-2 shadow-sm bg-white
+          h-[430px] sm:h-[430px] md:h-[430px] lg:h-[430px]"
+      >
+        <div className="w-full h-[140px] bg-gray-300 rounded-md mb-3" />
+        <div className="h-6 bg-gray-300 rounded mb-2"></div>
+        <div className="h-4 bg-gray-300 rounded mb-1 w-3/4"></div>
+        <div className="h-5 bg-gray-300 rounded mb-2 w-1/2"></div>
+        <div className="flex gap-2 mt-1">
+          <div className="h-4 w-4 bg-gray-300 rounded-full" />
+          <div className="h-4 w-4 bg-gray-300 rounded-full" />
+          <div className="h-4 w-4 bg-gray-300 rounded-full" />
+        </div>
+        <div className="h-4 bg-gray-300 rounded mt-2 w-1/3"></div>
+        <div className="h-10 bg-gray-400 rounded mt-3"></div>
+      </div>
+    ));
+  };
 
   return (
-    <main className="w-fit h-fit bg-white px-4 md:px-4 lg:px-10 flex flex-col gap-2">
+    <main className="w-full bg-white px-4 md:px-4 lg:px-10 flex flex-col gap-2">
       <div className="text-gray-400 font-semibold my-2 text-lg sm:text-xl">
         Home / {filterByCategory}
       </div>
 
-      <div className="lg:h-[110vh] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {products.map(product => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {loading ? renderLoader() : products.map(product => (
           <div
             key={product._id}
             className="flex flex-col justify-between rounded-2xl border border-slate-200 p-2 shadow-sm hover:shadow-lg transition duration-200 bg-white h-[430px]"

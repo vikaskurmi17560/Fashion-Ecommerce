@@ -20,6 +20,60 @@ function Page() {
     const params = useSearchParams();
     const id = params.get("product_id");
 
+  const SkeletonLoader = () => {
+  return (
+    <main className="w-full min-h-screen bg-slate-50 flex flex-col">
+      <Navbar />
+
+      <section className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-6 lg:gap-10 w-full">
+        <div className="w-full lg:w-1/2 h-64 sm:h-80 md:h-[450px] lg:h-[600px] rounded-xl bg-gray-300 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 animate-pulse"></div>
+        </div>
+
+        <div className="w-full lg:w-1/2 flex flex-col gap-4">
+          <div className="h-4 w-2/3 sm:w-1/2 rounded bg-gray-300 animate-pulse"></div>
+          <div className="h-6 w-1/2 sm:w-1/3 rounded bg-gray-300 animate-pulse"></div>
+          <div className="h-10 w-full sm:w-3/4 rounded bg-gray-300 animate-pulse"></div>
+          <div className="h-6 w-1/4 sm:w-1/5 rounded bg-gray-300 animate-pulse"></div>
+          <div className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
+          <div className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
+
+          <div className="flex gap-2 mt-2 flex-wrap">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-300 animate-pulse"></div>
+            ))}
+          </div>
+
+          <div className="flex gap-1 mt-2 flex-wrap">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="w-6 h-6 sm:w-8 sm:h-8 rounded bg-gray-300 animate-pulse"></div>
+            ))}
+          </div>
+
+          <div className="mt-4 h-12 w-full sm:w-1/2 rounded bg-gray-300 animate-pulse"></div>
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-4 mt-12 w-full flex flex-col gap-4">
+        <div className="flex gap-2 flex-wrap">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-10 w-1/3 sm:w-1/4 rounded bg-gray-300 animate-pulse"></div>
+          ))}
+        </div>
+
+        <div className="mt-4 space-y-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-6 sm:h-8 w-full rounded bg-gray-300 animate-pulse"></div>
+          ))}
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+};
+
+
     async function handleItem() {
         if (!id) return;
         setLoading(true);
@@ -76,13 +130,7 @@ function Page() {
         alert(`Submitted review with rating: ${selectedRating}`);
     };
 
-    if (loading) {
-        return (
-            <main className="w-full min-h-screen flex items-center justify-center">
-                <p className="text-gray-600 text-xl">Loading product...</p>
-            </main>
-        );
-    }
+    if (loading) return <SkeletonLoader />
 
     if (!item) {
         return (

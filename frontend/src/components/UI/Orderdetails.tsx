@@ -36,7 +36,28 @@ export default function Orderdetails({ orderId, onClose }: OrderDetailsProps) {
   }, [orderId]);
 
   if (loading) {
-    return <p className="text-center text-gray-600">Loading order details...</p>;
+    return (
+      <div className="p-6 border rounded-lg shadow bg-gray-50 max-w-5xl mx-auto space-y-6 animate-pulse">
+        <div className="h-8 w-40 bg-gray-300 rounded"></div>
+        <div className="h-6 w-32 bg-gray-300 rounded"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="h-5 bg-gray-300 rounded w-full"></div>
+          <div className="h-5 bg-gray-300 rounded w-full"></div>
+          <div className="h-5 bg-gray-300 rounded w-full"></div>
+        </div>
+        {[...Array(3)].map((_, idx) => (
+          <div key={idx} className="p-4 border rounded bg-white shadow-sm grid grid-cols-1 sm:grid-cols-[80px_auto_100px_80px] gap-4 items-center">
+            <div className="h-20 w-20 bg-gray-300 rounded mx-auto sm:mx-0"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-300 rounded w-32"></div>
+              <div className="h-3 bg-gray-300 rounded w-24"></div>
+            </div>
+            <div className="h-4 bg-gray-300 rounded w-16 mx-auto sm:mx-0"></div>
+            <div className="h-8 bg-gray-300 rounded w-20 mx-auto sm:mx-0"></div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   if (error) {
@@ -68,7 +89,6 @@ export default function Orderdetails({ orderId, onClose }: OrderDetailsProps) {
         Order #{order._id.slice(-6).toUpperCase()}
       </h2>
 
-
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-gray-700 mb-6">
         <p>
           <strong>Total:</strong> ₹{order.total}
@@ -81,7 +101,6 @@ export default function Orderdetails({ orderId, onClose }: OrderDetailsProps) {
         </p>
       </div>
 
-
       {order.items && order.items.length > 0 ? (
         <div>
           <h3 className="text-xl font-semibold mb-4 text-gray-800">Items</h3>
@@ -93,7 +112,6 @@ export default function Orderdetails({ orderId, onClose }: OrderDetailsProps) {
                   key={index}
                   className="p-4 border rounded bg-white shadow-sm grid grid-cols-1 sm:grid-cols-[80px_auto_100px_80px] gap-4 items-center"
                 >
-
                   <div className="flex justify-center">
                     {item.product_id?.cover_image && (
                       <img
@@ -106,20 +124,15 @@ export default function Orderdetails({ orderId, onClose }: OrderDetailsProps) {
                       />
                     )}
                   </div>
-
-
                   <div>
                     <p className="font-medium">{item.product_id?.name || 'Product'}</p>
                     <p className="text-sm text-gray-600">
                       Qty: {item.quantity} × ₹{item.price} = ₹{itemTotal}
                     </p>
                   </div>
-
-
                   <p className="font-semibold text-lg text-center sm:text-left">
                     ₹{itemTotal}
                   </p>
-
                   <div className="flex justify-center sm:justify-end">
                     <button
                       onClick={() =>

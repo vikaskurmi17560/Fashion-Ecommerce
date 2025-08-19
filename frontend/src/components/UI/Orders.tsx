@@ -11,11 +11,12 @@ interface User {
 function Orders() {
   const [orderData, setOrderData] = useState<any>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const { user } = useAuth() as { user: User | null };
 
   async function fetchdata() {
     if (!user) return;
-
+    setLoading(true);
     try {
       const orders = await GetALLOrders(user._id);
       if (orders.success) {
@@ -25,6 +26,8 @@ function Orders() {
       }
     } catch (error) {
       setOrderData([]);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -40,84 +43,90 @@ function Orders() {
     );
   }
 
+  const renderLoader = () => {
+    return [...Array(4)].map((_, idx) => (
+      <div
+        key={idx}
+        className="p-6 border rounded-xl bg-gray-100 shadow animate-pulse space-y-4"
+      >
+        <div className="h-6 w-32 bg-gray-300 rounded"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="h-4 bg-gray-300 rounded w-full"></div>
+          <div className="h-4 bg-gray-300 rounded w-full"></div>
+          <div className="h-4 bg-gray-300 rounded w-full"></div>
+          <div className="h-4 bg-gray-300 rounded w-full"></div>
+        </div>
+        <div className="h-8 w-32 bg-gray-300 rounded"></div>
+      </div>
+    ));
+  };
+
   return (
-    <div className="bg-white text-gray-800 p-6 rounded-lg shadow-md min-h-[200px]">
+    <div className="bg-white text-gray-800 p-6 rounded-lg shadow-md min-h-[200px] space-y-6">
       {selectedOrderId ? (
         <OrderDetails orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} />
+      ) : loading ? (
+        renderLoader()
       ) : orderData && orderData.length > 0 ? (
-        <div className="space-y-6">
-          {orderData.map((order: any) => (
-            <div
-              key={order._id}
-              className="border border-gray-200 rounded-xl p-6 bg-gradient-to-br from-gray-50 to-gray-100 shadow-sm hover:shadow-md transition duration-300"
-            >
-              <h2 className="text-xl font-bold mb-4 text-gray-800">
-                Order #{order._id.slice(-6)}
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="flex items-start">
-                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Customer:</span>
-                  <span className="text-gray-600">
-                    {order.customer_name ?? 'N/A'}
-                  </span>
-                </div>
-
-                 <div className="flex items-start">
-                    <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Address:</span>
-                    <span className="text-gray-600">
-                      {order.address ? (
-                        <>
-                          {order.address.firstname} {order.address.lastname},<br />
-                          {order.address.street},<br />
-                          {order.address.city}, {order.address.state} - {order.address.pincode},<br />
-                          {order.address.country}
-                        </>
-                      ) : (
-                        'N/A'
-                      )}
-                    </span>
-                  </div>
-
-                <div className="flex items-start">
-                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Payment ID:</span>
-                  <span className="text-gray-600">{order.payment_id ?? 'N/A'}</span>
-                </div>
-
-                <div className="flex items-start">
-                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Date:</span>
-                  <span className="text-gray-600">
-                    {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}
-                  </span>
-                </div>
-
-                <div className="flex items-start">
-                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Items:</span>
-                  <span className="text-gray-600">{order.items?.length ?? 0}</span>
-                </div>
-
-                <div className="flex items-start">
-                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Total:</span>
-                  <span className="text-gray-600 font-bold text-lg">₹{order.total ?? 0}</span>
-                </div>
-
-                <div className="flex items-start md:col-span-2">
-                  <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Status:</span>
-                  <span className="text-green-600 font-medium">Success</span>
-                </div>
+        orderData.map((order: any) => (
+          <div
+            key={order._id}
+            className="border border-gray-200 rounded-xl p-6 bg-gradient-to-br from-gray-50 to-gray-100 shadow-sm hover:shadow-md transition duration-300"
+          >
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
+              Order #{order._id.slice(-6)}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="flex items-start">
+                <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Customer:</span>
+                <span className="text-gray-600">{order.customer_name ?? 'N/A'}</span>
               </div>
-
-              <div className="mt-4">
-                <button
-                  onClick={() => setSelectedOrderId(order._id)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow text-sm transition duration-200"
-                >
-                  View Details
-                </button>
+              <div className="flex items-start">
+                <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Address:</span>
+                <span className="text-gray-600">
+                  {order.address ? (
+                    <>
+                      {order.address.firstname} {order.address.lastname},<br />
+                      {order.address.street},<br />
+                      {order.address.city}, {order.address.state} - {order.address.pincode},<br />
+                      {order.address.country}
+                    </>
+                  ) : 'N/A'}
+                </span>
+              </div>
+              <div className="flex items-start">
+                <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Payment ID:</span>
+                <span className="text-gray-600">{order.payment_id ?? 'N/A'}</span>
+              </div>
+              <div className="flex items-start">
+                <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Date:</span>
+                <span className="text-gray-600">
+                  {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}
+                </span>
+              </div>
+              <div className="flex items-start">
+                <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Items:</span>
+                <span className="text-gray-600">{order.items?.length ?? 0}</span>
+              </div>
+              <div className="flex items-start">
+                <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Total:</span>
+                <span className="text-gray-600 font-bold text-lg">₹{order.total ?? 0}</span>
+              </div>
+              <div className="flex items-start md:col-span-2">
+                <span className="min-w-[80px] font-semibold text-gray-700 shrink-0">Status:</span>
+                <span className="text-green-600 font-medium">Success</span>
               </div>
             </div>
-          ))}
-        </div>
+            <div className="mt-4">
+              <button
+                onClick={() => setSelectedOrderId(order._id)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow text-sm transition duration-200"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        ))
       ) : (
         <p className="text-gray-500 text-center">No orders found.</p>
       )}

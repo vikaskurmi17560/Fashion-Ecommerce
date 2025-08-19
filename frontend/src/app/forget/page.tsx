@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 
 function Page() {
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm<ForgotFormData>();
   const router = useRouter();
 
@@ -16,6 +17,7 @@ function Page() {
   }, []);
 
   async function handleForgot(data: ForgotFormData) {
+    setLoading(true);
     try {
       const response = await Forgot(data);
       if (response.success) {
@@ -26,6 +28,8 @@ function Page() {
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "An error occurred.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -50,13 +54,19 @@ function Page() {
             placeholder="Enter Email"
             className="w-full px-4 text-gray-500 py-3 border rounded-md outline-none focus:ring-blue-200 focus:ring-2"
             required
+            disabled={loading}
           />
 
           <button
             type="submit"
-            className="w-full font-bold px-4 mt-4 py-3 text-white bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 rounded-md"
+            disabled={loading}
+            className={`w-full font-bold px-4 mt-4 py-3 text-white rounded-md transition ${
+              loading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 hover:brightness-105'
+            }`}
           >
-            Send Reset-Password Link
+            {loading ? "Sending..." : "Send Reset-Password Link"}
           </button>
         </form>
       </div>

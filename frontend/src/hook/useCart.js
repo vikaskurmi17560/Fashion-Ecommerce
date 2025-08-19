@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useHelpStore } from '@/service/help';
 import {
   CartDelete,
   GetCart,
@@ -12,7 +13,7 @@ import useAuth from './useAuth';
 function useCart() {
   const [carts, setCarts] = useState([]);
   const { user } = useAuth();
-
+ const { count, setCount } = useHelpStore();
   useEffect(() => {
     if (user?._id) {
       getCarts();
@@ -27,6 +28,7 @@ function useCart() {
       const response = await GetCart(user._id);
       if (response.success) {
         setCarts(response.data);
+        setCount(response.data.length);
       }
     } catch (error) {
       console.error('Failed to fetch carts:', error);
@@ -43,6 +45,7 @@ function useCart() {
       if (response.success) {
         toast.success('Item Removed');
         await getCarts();
+        setCount(count-1)
       }
     } catch (error) {
       toast.error('Failed to remove item');
@@ -119,6 +122,7 @@ function useCart() {
 
       if (res?.success) {
         toast.success('Added to cart');
+        setCount(count+1);
         return;
       }
 
