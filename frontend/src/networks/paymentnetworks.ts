@@ -41,7 +41,7 @@ export async function handleCheckout(
 
     if (response.data.success) {
       const options = {
-        key: "rzp_test_3psAXU5WmuQ7qY",
+        key: process.env.NEXT_PUBLIC_TEST_API_KEY,
         amount: amount,          
         currency: "INR",
         name: "Vikas Corp",

@@ -239,18 +239,9 @@ function CheckoutPage() {
                     checked={selectedPayment === 'bank'}
                     onChange={(e) => setSelectedPayment(e.target.value)}
                   />
-                  Direct bank transfer
+                  Online Payment
                 </label>
-                <label className="flex gap-2 items-center">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="check"
-                    checked={selectedPayment === 'check'}
-                    onChange={(e) => setSelectedPayment(e.target.value)}
-                  />
-                  Check payments
-                </label>
+            
                 <button
                   type="submit"
                   className={`mt-4 ${user
