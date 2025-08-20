@@ -1,7 +1,8 @@
 'use client'
+export const dynamic = 'force-dynamic';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import Navbar from '@/components/UI/Navbar';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -12,12 +13,15 @@ interface ResetFormData {
   confirm_password: string;
 }
 
-function Page() {
+function ResetPasswordContent() {
   const [seePassword, setSeePassword] = useState(false);
   const { register, handleSubmit } = useForm<ResetFormData>();
+  const [token , setToken] = useState<string | null>(null);
   const params = useSearchParams();
   const router = useRouter();
-  const token = params.get('token');
+   useEffect(() => {
+    setToken(params.get('token'));
+  }, [params]);
 
   async function handleReset(data: ResetFormData) {
     try {
@@ -96,4 +100,10 @@ function Page() {
   );
 }
 
-export default Page;
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen text-xl">Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}

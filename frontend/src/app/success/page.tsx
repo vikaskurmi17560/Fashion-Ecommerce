@@ -1,21 +1,27 @@
 'use client';
-import React, { useEffect } from 'react';
+export const dynamic = 'force-dynamic';
+
+import React, { useEffect, useState , Suspense} from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { green } from '@mui/material/colors';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@mui/material';
 
-function PaymentSuccessPage() {
+function SuccessContent() {
   const search = useSearchParams();
-  const router=useRouter();
-  const id = search.get('razorpay_payment_id');
-  
+  const router = useRouter();
+  const [id, setId] = useState<any>(0);
+  useEffect(() => {
+    const ID = search.get('razorpay_payment_id');
+    setId(ID);
+  }, [search])
   useEffect(() => {
     const timer = setTimeout(() => {
       router.push('/products');
     }, 1000);
-      return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
   }, [router]);
+
   return (
     <main className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-blue-200 to-blue-500">
       <div className="bg-white rounded-2xl shadow-2xl p-10 w-[90%] max-w-md flex flex-col items-center animate-fade-in">
@@ -31,12 +37,11 @@ function PaymentSuccessPage() {
             Payment ID: <span className="font-mono">{id}</span>
           </p>
         )}
-
         <Button
           variant="contained"
           color="success"
           className="mt-6"
-          onClick={() => window.location.href = '/'}
+          onClick={() => router.push('/')}
         >
           Go to Home
         </Button>
@@ -45,4 +50,10 @@ function PaymentSuccessPage() {
   );
 }
 
-export default PaymentSuccessPage;
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen text-xl">Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
+  );
+}

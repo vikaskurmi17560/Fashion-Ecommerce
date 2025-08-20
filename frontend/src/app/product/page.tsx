@@ -1,6 +1,6 @@
 'use client';
 import Navbar from '@/components/UI/Navbar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState ,Suspense} from 'react';
 import Footer from '@/components/UI/Footer';
 import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
@@ -9,69 +9,72 @@ import { GetProduct } from '@/networks/productnetworks';
 import Link from 'next/link';
 import useCart from '@/hook/useCart';
 
-function Page() {
+function ProductPageContent() {
     const { AddCart } = useCart();
     const [item, setItem] = useState<any>(null);
     const [option, setOption] = useState<number>(0);
     const [selectedRating, setSelectedRating] = useState<number>(0);
     const [hoveredRating, setHoveredRating] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [id, setId] = useState<string | null>('');
     const router = useRouter();
     const params = useSearchParams();
-    const id = params.get("product_id");
+    useEffect(() => {
+        const productId = params.get('product_id');
+        setId(productId);
+    }, [params]);
+    const SkeletonLoader = () => {
+        return (
+            <main className="w-full min-h-screen bg-slate-50 flex flex-col">
+                <Navbar />
 
-  const SkeletonLoader = () => {
-  return (
-    <main className="w-full min-h-screen bg-slate-50 flex flex-col">
-      <Navbar />
+                <section className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-6 lg:gap-10 w-full">
+                    <div className="w-full lg:w-1/2 h-64 sm:h-80 md:h-[450px] lg:h-[600px] rounded-xl bg-gray-300 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 animate-pulse"></div>
+                    </div>
 
-      <section className="max-w-7xl mx-auto px-4 py-12 flex flex-col lg:flex-row gap-6 lg:gap-10 w-full">
-        <div className="w-full lg:w-1/2 h-64 sm:h-80 md:h-[450px] lg:h-[600px] rounded-xl bg-gray-300 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 animate-pulse"></div>
-        </div>
+                    <div className="w-full lg:w-1/2 flex flex-col gap-4">
+                        <div className="h-4 w-2/3 sm:w-1/2 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-6 w-1/2 sm:w-1/3 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-10 w-full sm:w-3/4 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-6 w-1/4 sm:w-1/5 rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
+                        <div className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
 
-        <div className="w-full lg:w-1/2 flex flex-col gap-4">
-          <div className="h-4 w-2/3 sm:w-1/2 rounded bg-gray-300 animate-pulse"></div>
-          <div className="h-6 w-1/2 sm:w-1/3 rounded bg-gray-300 animate-pulse"></div>
-          <div className="h-10 w-full sm:w-3/4 rounded bg-gray-300 animate-pulse"></div>
-          <div className="h-6 w-1/4 sm:w-1/5 rounded bg-gray-300 animate-pulse"></div>
-          <div className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
-          <div className="h-4 w-full rounded bg-gray-300 animate-pulse"></div>
+                        <div className="flex gap-2 mt-2 flex-wrap">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-300 animate-pulse"></div>
+                            ))}
+                        </div>
 
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-300 animate-pulse"></div>
-            ))}
-          </div>
+                        <div className="flex gap-1 mt-2 flex-wrap">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="w-6 h-6 sm:w-8 sm:h-8 rounded bg-gray-300 animate-pulse"></div>
+                            ))}
+                        </div>
 
-          <div className="flex gap-1 mt-2 flex-wrap">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="w-6 h-6 sm:w-8 sm:h-8 rounded bg-gray-300 animate-pulse"></div>
-            ))}
-          </div>
+                        <div className="mt-4 h-12 w-full sm:w-1/2 rounded bg-gray-300 animate-pulse"></div>
+                    </div>
+                </section>
 
-          <div className="mt-4 h-12 w-full sm:w-1/2 rounded bg-gray-300 animate-pulse"></div>
-        </div>
-      </section>
+                <section className="max-w-7xl mx-auto px-4 mt-12 w-full flex flex-col gap-4">
+                    <div className="flex gap-2 flex-wrap">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="h-10 w-1/3 sm:w-1/4 rounded bg-gray-300 animate-pulse"></div>
+                        ))}
+                    </div>
 
-      <section className="max-w-7xl mx-auto px-4 mt-12 w-full flex flex-col gap-4">
-        <div className="flex gap-2 flex-wrap">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-10 w-1/3 sm:w-1/4 rounded bg-gray-300 animate-pulse"></div>
-          ))}
-        </div>
+                    <div className="mt-4 space-y-4">
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="h-6 sm:h-8 w-full rounded bg-gray-300 animate-pulse"></div>
+                        ))}
+                    </div>
+                </section>
 
-        <div className="mt-4 space-y-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-6 sm:h-8 w-full rounded bg-gray-300 animate-pulse"></div>
-          ))}
-        </div>
-      </section>
-
-      <Footer />
-    </main>
-  );
-};
+                <Footer />
+            </main>
+        );
+    };
 
 
     async function handleItem() {
@@ -363,4 +366,10 @@ function Page() {
     );
 }
 
-export default Page;
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen text-xl">Loading...</div>}>
+      <ProductPageContent />
+    </Suspense>
+  );
+}

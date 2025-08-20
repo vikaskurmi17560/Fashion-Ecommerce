@@ -31,7 +31,7 @@ export default function Page() {
 
   const typedCarts: CartItem[] = (carts as CartItem[]) || [];
 
-  const { setProfile, name, profile, email, gender, phone_no } = useHelpStore();
+  const { setCount, setProfile, name, profile, email, gender, phone_no } = useHelpStore();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -67,6 +67,7 @@ export default function Page() {
   }, [user, setProfile]);
 
   const handleLogout = () => {
+    setCount(0);
     logout();
     setProfile({
       name: "",

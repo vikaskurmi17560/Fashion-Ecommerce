@@ -40,7 +40,7 @@ export default function Navbar() {
   const path = usePathname();
   const { user } = useAuth() as { user: User | null };
   const { carts, deleteCart, getCarts, updateCartQuantity } = useCart();
-  const {count}=useHelpStore();
+  const {count , setCount}=useHelpStore();
   const [seeBucket, setSeeBucket] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [userData, setUserData] = useState<any>(null);
@@ -105,6 +105,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
+      setCount(0);
       await logout();
       router.replace('/login');
     } catch {
