@@ -38,7 +38,10 @@ const excludedPathsForCart = ['cart', 'checkout', 'profile'];
 export default function Navbar() {
   const router = useRouter();
   const path = usePathname();
-  const { user } = useAuth() as { user: User | null };
+  const { user, setUser } = useAuth() as {
+  user: User | null;
+  setUser: (user: User | null) => void;
+};
   const { carts, deleteCart, getCarts, updateCartQuantity } = useCart();
   const {count , setCount}=useHelpStore();
   const [seeBucket, setSeeBucket] = useState(false);
@@ -107,6 +110,7 @@ export default function Navbar() {
     try {
       setCount(0);
       await logout();
+      setUser(null);
       router.replace('/login');
     } catch {
       setLoggingOut(false);

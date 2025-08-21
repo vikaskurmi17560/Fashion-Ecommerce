@@ -22,5 +22,5 @@ export default function useAuth() {
             });
     }, []);
 
-    return { user, loading };
+    return { user,setUser, loading };
 }

@@ -23,7 +23,11 @@ interface User {
 export default function Page() {
   const router = useRouter();
   const { carts } = useCart();
-  const { user, loading: authLoading } = useAuth() as { user: User | null; loading: boolean };
+  const { user, loading: authLoading, setUser } = useAuth() as {
+  user: User | null;
+  loading: boolean;
+  setUser: (user: User | null) => void;
+};
 
   const [userData, setUserData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'account' | 'orders' | 'cart' | 'editprofile'>('account');
@@ -76,6 +80,7 @@ export default function Page() {
       phone_no: 0,
       gender: "",
     })
+    setUser(null);
     router.replace('/login');
   };
 
