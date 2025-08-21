@@ -72,7 +72,6 @@ export default function Page() {
 
   const handleLogout = () => {
     setCount(0);
-    logout();
     setProfile({
       name: "",
       profile: "",
@@ -80,6 +79,7 @@ export default function Page() {
       phone_no: 0,
       gender: "",
     })
+    logout();
     setUser(null);
     router.replace('/login');
   };
