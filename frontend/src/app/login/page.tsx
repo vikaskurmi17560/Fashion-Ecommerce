@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import useAuth from '@/hook/useAuth';
 
 interface LoginFormData {
   email: string;
@@ -16,13 +17,17 @@ interface LoginFormData {
 function Page() {
   const [seePassword, setSeePassword] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [Loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm<LoginFormData>();
   const router = useRouter();
+  const { user } = useAuth() || { user: null };
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (user) {
+      router.replace('/profile');
+    }
+  }, [user]);
 
   async function handleLogIN(data: LoginFormData) {
     setLoading(true);
@@ -41,7 +46,7 @@ function Page() {
     }
   }
 
-  if (!mounted) return null;
+  if (!mounted || user) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
@@ -63,7 +68,7 @@ function Page() {
             autoComplete="username"
             required
             className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300 transition"
-            disabled={loading}
+            disabled={Loading}
           />
 
           <div className="relative w-full">
@@ -75,7 +80,7 @@ function Page() {
               maxLength={16}
               required
               className="w-full px-4 py-3 border rounded-md text-gray-700 outline-none focus:ring-2 focus:ring-blue-300 transition"
-              disabled={loading}
+              disabled={Loading}
             />
             <button
               type="button"
@@ -97,14 +102,14 @@ function Page() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={Loading}
             className={`w-full font-bold px-4 py-3 text-white rounded-md transition ${
-              loading
+              Loading
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 hover:opacity-90'
             }`}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {Loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
       </div>

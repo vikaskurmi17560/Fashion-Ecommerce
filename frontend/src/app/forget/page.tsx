@@ -5,16 +5,21 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import useAuth from '@/hook/useAuth';
 
 function Page() {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm<ForgotFormData>();
   const router = useRouter();
+  const { user } = useAuth() || { user: null };
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (user) {
+      router.replace('/profile');
+    }
+  }, [user]);
 
   async function handleForgot(data: ForgotFormData) {
     setLoading(true);
@@ -33,7 +38,7 @@ function Page() {
     }
   }
 
-  if (!mounted) return null;
+  if (!mounted || user) return null;
 
   return (
     <div className="flex flex-col gap-y-16 min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">

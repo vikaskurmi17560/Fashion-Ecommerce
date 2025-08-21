@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import useAuth from '@/hook/useAuth';
 
 function Page() {
   const [seePassword, setSeePassword] = useState(false);
@@ -13,10 +14,14 @@ function Page() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth() || { user: null };
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (user) {
+      router.replace('/profile');
+    }
+  }, [user]);
 
   async function handleSignUp(data: any) {
     setLoading(true);
@@ -45,7 +50,7 @@ function Page() {
     }
   }
 
-  if (!mounted) return null;
+  if (!mounted || user) return null;
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">

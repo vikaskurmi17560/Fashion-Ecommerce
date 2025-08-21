@@ -166,7 +166,7 @@ exports.forgetPassword = async (req, res) => {
 
     await customerExist.save({ validateBeforeSave: false });
 
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `https://fashion-ecommerce-lyart-six.vercel.app/reset-password?token=${resetToken}`;
 
     await sendEmail({
       email: customerExist.email,

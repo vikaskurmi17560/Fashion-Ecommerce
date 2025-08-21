@@ -6,7 +6,6 @@ const cookieParser = require("cookie-parser");
 dotenv.config();
 const app = express();
 
-
 const customer_route = require("./src/routes/customer_route");
 const product_route = require("./src/routes/product_route");
 const cart_route = require("./src/routes/cart_route");
@@ -15,7 +14,7 @@ const address_route = require("./src/routes/address_route");
 const order_route = require("./src/routes/order_route");
 
 app.use(cors({
-  origin: "http://localhost:3000",  
+  origin: "https://fashion-ecommerce-lyart-six.vercel.app",  
   credentials: true,              
 }));
 app.use(express.json());
