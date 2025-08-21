@@ -1,4 +1,4 @@
-export const ServerUrl="http://localhost:6969"
+export const ServerUrl=process.env.NEXT_PUBLIC_API_URL
 export const signUpUrl=ServerUrl+"/api/v1/customer/signup"
 export const LoginUrl=ServerUrl+"/api/v1/customer/login"
 export const LogOutUrl=ServerUrl+"/api/v1/customer/logout"
