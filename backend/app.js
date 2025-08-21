@@ -14,7 +14,7 @@ const address_route = require("./src/routes/address_route");
 const order_route = require("./src/routes/order_route");
 
 app.use(cors({
-  origin: "https://fashion-ecommerce-lyart-six.vercel.app",  
+  origin: ["https://fashion-ecommerce-lyart-six.vercel.app","http://localhost:3000"],  
   credentials: true,              
 }));
 app.use(express.json());
