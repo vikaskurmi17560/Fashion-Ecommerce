@@ -70,8 +70,10 @@ export default function Page() {
     fetchUserData();
   }, [user, setProfile]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setCount(0);
+    await logout();
+    setUser(null);
     setProfile({
       name: "",
       profile: "",
@@ -79,8 +81,6 @@ export default function Page() {
       phone_no: 0,
       gender: "",
     })
-    logout();
-    setUser(null);
     router.replace('/login');
   };
 
