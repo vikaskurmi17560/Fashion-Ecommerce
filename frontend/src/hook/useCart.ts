@@ -55,7 +55,7 @@ function useCart() {
     }
   }
 
-  const updateCartQuantity = async (productId: string, change: number) => {
+  const updateCartQuantity = async (productId: string, change: boolean) => {
     if (!user?._id) {
       toast.error('User not logged in');
       return false;
@@ -67,9 +67,9 @@ function useCart() {
         toast.error('Item not found in cart');
         return false;
       }
-
-      const currentQty = itemExists.data?.quantity || 0;
-      const newQty = currentQty + change;
+  
+      const delta = change ? 1 : -1;
+      const newQty = itemExists.data.quantity + delta;
 
       if (newQty < 1) {
         toast.error('Quantity cannot be less than 1');
@@ -87,16 +87,16 @@ function useCart() {
           item.product_id._id === productId
             ? {
                 ...item,
-                quantity: item.quantity + change,
+                quantity: item.quantity + delta,
                 total_price:
                   (item.product_id.sale_price ?? item.product_id.original_price ?? 0) *
-                  (item.quantity + change),
+                  (item.quantity + delta),
               }
             : item
         )
       );
 
-      const updateResponse = await CartUpdateQuantity(productId, user._id, change);
+      const updateResponse = await CartUpdateQuantity(productId, user._id, delta);
       if (!updateResponse.success) {
         toast.error('Failed to update quantity');
         await getCarts(); // revert to server state
@@ -137,7 +137,8 @@ function useCart() {
       }
 
       if (res?.message === 'cart is already here!') {
-        await updateCartQuantity(data._id, +1);
+        // Increase by 1 when item already exists
+        await updateCartQuantity(data._id, true);
         return;
       }
 

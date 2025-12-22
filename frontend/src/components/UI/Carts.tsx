@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { toast } from 'react-hot-toast';
 import useCart from '@/hook/useCart';
 import useAuth from '@/hook/useAuth';
 
-interface CartProductRef {
+interface CartProductRef {  
   _id: string;
   cover_image: string;
   name: string;
@@ -116,17 +117,11 @@ if(loading) return <Loader />
     return acc + price * item.quantity;
   }, 0);
 
-  const handleQuantityChange = async (productId: string, change: number) => {
+  const handleQuantityChange = async (productId: string, change: boolean) => {
     try {
       const updated = await updateCartQuantity(productId, change);
-      if (updated) {
-        setLocalCarts((prev) =>
-          prev.map((item) =>
-            item.product_id._id === productId
-              ? { ...item, quantity: item.quantity + change }
-              : item
-          )
-        );
+      if (!updated) {
+        toast.error('Quantity update failed');
       }
     } catch (error) {
       console.error('Quantity update failed:', error);
@@ -208,7 +203,7 @@ if(loading) return <Loader />
               <div className="flex items-center justify-center gap-2 mx-auto">
                 <button
                   type="button"
-                  onClick={() => handleQuantityChange(product._id, -1)}
+                  onClick={() => handleQuantityChange(product._id, false)}
                   className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50"
                   disabled={cart.quantity <= 1}
                 >
@@ -219,7 +214,7 @@ if(loading) return <Loader />
 
                 <button
                   type="button"
-                  onClick={() => handleQuantityChange(product._id, 1)}
+                  onClick={() => handleQuantityChange(product._id, true)}
                   className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50"
                   disabled={cart.quantity >= 5}
                 >

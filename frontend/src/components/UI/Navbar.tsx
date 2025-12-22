@@ -73,7 +73,7 @@ export default function Navbar() {
   const cartItems: CartItem[] = carts ?? [];
   const getPrice = (item: CartItem): number => item.total_price ?? item.product_id.price ?? 0;
 
-  const handleQuantityChange = async (productId: string, change: number) => {
+  const handleQuantityChange = async (productId: string, change: boolean) => {
     try {
       const updated = await updateCartQuantity(productId, change);
       if (updated) getCarts();
@@ -236,9 +236,9 @@ export default function Navbar() {
                         <button onClick={() => handleDelete(cart._id)} type="button"><ClearIcon /></button>
                       </div>
                       <div className="text-gray-500 flex items-center gap-2 flex-wrap">
-                        <button onClick={() => { if (quantity > 1) handleQuantityChange(cart.product_id._id, -1); }} disabled={quantity <= 1} className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50" type="button">-</button>
+                        <button onClick={() => { if (quantity > 1) handleQuantityChange(cart.product_id._id, false); }} disabled={quantity <= 1} className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50" type="button">-</button>
                         <span>{quantity}</span>
-                        <button onClick={() => { if (quantity < 5) handleQuantityChange(cart.product_id._id, +1); }} disabled={quantity >= 5} className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50" type="button">+</button>
+                        <button onClick={() => { if (quantity < 5) handleQuantityChange(cart.product_id._id, true); }} disabled={quantity >= 5} className="px-2 py-1 border rounded-md hover:bg-gray-200 disabled:opacity-50" type="button">+</button>
                         <span> x ₹{price.toFixed(2)}</span>
                         <span className="ml-auto font-semibold">Subtotal: ₹{itemSubtotal.toFixed(2)}</span>
                       </div>
