@@ -11,7 +11,7 @@ function FeatureSection() {
   
   useEffect(() => {
     fetchProducts(1);
-  }, [filterByCategory]);
+  }, [filterByCategory, fetchProducts]);
 
   const handleNavigate = (productId: string) => {
     router.push(`/product?product_id=${productId}`);
@@ -59,7 +59,7 @@ function FeatureSection() {
               <h2 className="text-black font-semibold text-lg truncate">{product.name}</h2>
               <p className="text-gray-600 text-sm mt-1 capitalize">{product.category}</p>
 
-              {product.colors?.length > 0 && (
+              {Array.isArray(product.colors) && product.colors.length > 0 && (
                 <div className="flex gap-2 mt-3">
                   {product.colors.map((color, idx) => (
                     <span
