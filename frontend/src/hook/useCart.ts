@@ -14,12 +14,13 @@ import useAuth from './useAuth';
 function useCart() {
   const [carts, setCarts] = useState<any[]>([]);
   const { user } = useAuth() as { user: { _id?: string } | null };
-  const { setCount } = useHelpStore();
+  const setCount = useHelpStore((s) => s.setCount);
+  const userId = user?._id;
 
   const getCarts = useCallback(async () => {
-    if (!user?._id) return;
+    if (!userId) return;
     try {
-      const response = await GetCart(user._id);
+      const response = await GetCart(userId);
       if (response.success) {
         setCarts(response.data);
         setCount(response.data.length);
@@ -27,16 +28,16 @@ function useCart() {
     } catch (error) {
       console.error('Failed to fetch carts:', error);
     }
-  }, [user, setCount]);
+  }, [userId, setCount]);
 
   useEffect(() => {
-    if (user?._id) {
+    if (userId) {
       getCarts();
     } else {
       setCarts([]);
       setCount(0);
     }
-  }, [user, getCarts, setCount]);
+  }, [userId, getCarts]);
 
   async function deleteCart(id: string) {
     if (!user?._id) {
@@ -56,13 +57,13 @@ function useCart() {
   }
 
   const updateCartQuantity = async (productId: string, change: boolean) => {
-    if (!user?._id) {
+    if (!userId) {
       toast.error('User not logged in');
       return false;
     }
 
     try {
-      const itemExists = await ItemExists(productId, user._id);
+      const itemExists = await ItemExists(productId, userId);
       if (!itemExists?.success) {
         toast.error('Item not found in cart');
         return false;
@@ -96,7 +97,7 @@ function useCart() {
         )
       );
 
-      const updateResponse = await CartUpdateQuantity(productId, user._id, delta);
+      const updateResponse = await CartUpdateQuantity(productId, userId, delta);
       if (!updateResponse.success) {
         toast.error('Failed to update quantity');
         await getCarts(); // revert to server state
@@ -113,14 +114,14 @@ function useCart() {
   };
 
   async function AddCart(data: any) {
-    if (!user?._id) {
+    if (!userId) {
       toast.error('User not logged in');
       return;
     }
 
     try {
       const body = {
-        customer_id: user._id,
+        customer_id: userId,
         product_id: data._id,
         quantity: 1,
         size: data.sizes?.[0]?.size || 'Default',

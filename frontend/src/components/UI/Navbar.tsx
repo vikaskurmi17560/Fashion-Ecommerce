@@ -19,6 +19,8 @@ interface Product {
   cover_image: string;
   name: string;
   price?: number;
+  sale_price?: number;
+  original_price?: number;
 }
 
 interface CartItem {
@@ -68,10 +70,16 @@ export default function Navbar() {
       setUserData(null);
       setLoadingUserData(false);
     }
-  }, [user]);
+  }, [user, getCarts]);
 
   const cartItems: CartItem[] = carts ?? [];
-  const getPrice = (item: CartItem): number => item.total_price ?? item.product_id.price ?? 0;
+  const getUnitPrice = (item: CartItem): number => {
+    const quantity = item.quantity || 1;
+    if (item.total_price !== undefined && item.total_price !== null) {
+      return item.total_price / quantity;
+    }
+    return item.product_id.price ?? item.product_id.sale_price ?? item.product_id.original_price ?? 0;
+  };
 
   const handleQuantityChange = async (productId: string, change: boolean) => {
     try {
@@ -109,10 +117,14 @@ export default function Navbar() {
     setLoggingOut(true);
     try {
       setCount(0);
+      setSeeBucket(false);
+      setShowMobileMenu(false);
       await logout();
       setUser(null);
       router.replace('/login');
     } catch {
+      // ignore logout errors; state reset in finally
+    } finally {
       setLoggingOut(false);
     }
   };
@@ -224,7 +236,7 @@ export default function Navbar() {
           <div className="h-[68%] w-full overflow-auto flex flex-col items-center gap-4 p-4 text-black">
             {cartItems.length > 0 ? (
               cartItems.map((cart) => {
-                const price = getPrice(cart);
+                const price = getUnitPrice(cart);
                 const quantity = cart.quantity ?? 1;
                 const itemSubtotal = price * quantity;
                 return (
@@ -257,7 +269,7 @@ export default function Navbar() {
                   <span>Total</span>
                   <span>
                     ₹
-                    {cartItems.reduce((acc, item) => acc + getPrice(item) * (item.quantity ?? 1), 0).toFixed(2)}
+                    {cartItems.reduce((acc, item) => acc + getUnitPrice(item) * (item.quantity ?? 1), 0).toFixed(2)}
                   </span>
                 </div>
                 <button onClick={() => router.push('/cart')} className="w-full bg-blue-500 text-white py-2 rounded hover:bg-black hover:text-white transition" type="button">VIEW CART</button>

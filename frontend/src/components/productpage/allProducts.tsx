@@ -24,7 +24,7 @@ function AllProducts() {
 
   useEffect(() => {
     fetchProducts(currentPage);
-  }, [currentPage, filterByCategory, filterByPrice, searchTerm]);
+  }, [currentPage, filterByCategory, filterByPrice, searchTerm, fetchProducts]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -69,7 +69,11 @@ function AllProducts() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {loading ? renderLoader() : products.map(product => (
+        {loading ? renderLoader() : products.map(product => {
+          const price = product.sale_price ?? product.original_price ?? 0;
+          const hasDiscount = product.original_price && product.sale_price && product.sale_price < product.original_price;
+          const rating = Number(product.average_rating ?? 0);
+          return (
           <div
             key={product._id}
             className="flex flex-col justify-between rounded-2xl border border-slate-200 p-2 shadow-sm hover:shadow-lg transition duration-200 bg-white h-[430px]"
@@ -88,9 +92,14 @@ function AllProducts() {
             <div className="flex flex-col gap-1 mt-3">
               <div className="text-base sm:text-lg font-bold text-slate-700 truncate">{product.name}</div>
               <div className="text-slate-500 text-sm sm:text-base truncate">{product.category}</div>
-              <div className="text-base sm:text-lg font-semibold text-black">₹ {product.sale_price}</div>
+              <div className="text-base sm:text-lg font-semibold text-black flex items-center gap-2">
+                <span>₹ {price}</span>
+                {hasDiscount && (
+                  <span className="text-sm text-gray-500 line-through">₹ {product.original_price}</span>
+                )}
+              </div>
               <div className="flex gap-2 mt-1">
-                {product.colors.map((color, idx) => (
+                {product.colors?.map((color, idx) => (
                   <div
                     key={idx}
                     className="h-4 w-4 rounded-full border"
@@ -99,10 +108,10 @@ function AllProducts() {
                 ))}
               </div>
               <div className="flex items-center gap-1 text-yellow-500 mt-1">
-                {[...Array(Math.floor(product.average_rating))].map((_, idx) => (
+                {[...Array(Math.floor(rating))].map((_, idx) => (
                   <StarIcon key={idx} fontSize="small" />
                 ))}
-                {product.average_rating % 1 !== 0 && <StarHalfIcon fontSize="small" />}
+                {rating % 1 !== 0 && <StarHalfIcon fontSize="small" />}
               </div>
               {product.brief_description && (
                 <div className="text-sm text-gray-500 line-clamp-2 mt-1">{product.brief_description}</div>
@@ -116,7 +125,8 @@ function AllProducts() {
               ADD TO CART
             </button>
           </div>
-        ))}
+        );
+        })}
       </div>
 
       <div className="w-full flex justify-between gap-4 text-sm font-semibold text-white px-5 py-2">

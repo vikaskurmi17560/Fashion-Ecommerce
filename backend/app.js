@@ -14,7 +14,7 @@ const address_route = require("./src/routes/address_route");
 const order_route = require("./src/routes/order_route");
 
 app.use(cors({
-  origin: ["https://fashion-ecommerce-lyart-six.vercel.app","https://fashion-ecommerce-zunu.vercel.app","https://fashion-ecommerce-8rxqzbxea-vikas-kurmis-projects.vercel.app"],  
+  origin: ["https://fashion-ecommerce-lyart-six.vercel.app","https://fashion-ecommerce-8rxqzbxea-vikas-kurmis-projects.vercel.app"],  
   credentials: true,              
 }));
 app.use(express.json());
@@ -29,3 +29,5 @@ app.use('/api/v1/address', address_route);
 app.use('/api/v1/order', order_route);
 
 module.exports = app;
+
+

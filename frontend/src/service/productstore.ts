@@ -5,10 +5,11 @@ export interface Product {
   _id: string;
   name: string;
   category: string;
-  sale_price: number;
+  sale_price?: number;
+  original_price?: number;
   cover_image: string;
-  colors: string[];
-  average_rating: number;
+  colors?: string[];
+  average_rating?: number;
   brief_description?: string;
 }
 
